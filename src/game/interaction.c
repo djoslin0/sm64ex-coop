@@ -382,12 +382,13 @@ void mario_blow_off_cap(struct MarioState *m, f32 capSpeed) {
     }
 }
 
-u32 mario_lose_cap_to_enemy(u32 arg) {
+u32 mario_lose_cap_to_enemy(struct MarioState* m, u32 arg) {
+    if (m->playerIndex != 0) { return FALSE; }
     u32 wasWearingCap = FALSE;
 
-    if (does_mario_have_hat(gMarioState)) {
+    if (does_mario_have_hat(m)) {
         save_file_set_flags(arg == 1 ? SAVE_FLAG_CAP_ON_KLEPTO : SAVE_FLAG_CAP_ON_UKIKI);
-        gMarioState->flags &= ~(MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
+        m->flags &= ~(MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD);
         wasWearingCap = TRUE;
     }
 
@@ -646,9 +647,10 @@ u32 determine_knockback_action(struct MarioState *m, UNUSED s32 arg) {
         f32 mag = scaler * (f32)gServerSettings.playerKnockbackStrength * sign;
         m->forwardVel = mag;
         if (sign > 0 && terrainIndex == 1) { mag *= -1.0f; }
-        m->vel[0] = mag * sins(angleToObject);
+        m->vel[0] = -mag * sins(m->interactObj->oFaceAngleYaw);
         m->vel[1] = (mag < 0) ? -mag : mag;
-        m->vel[2] = mag * coss(angleToObject);
+        m->vel[2] = -mag * coss(m->interactObj->oFaceAngleYaw);
+        m->faceAngle[1] = m->interactObj->oFaceAngleYaw + (sign == 1.0f ? 0 : 0x8000);
     }
 
     return bonkAction;
@@ -1247,7 +1249,8 @@ u32 interact_player(struct MarioState* m, UNUSED u32 interactType, struct Object
     u8 isInCutscene = ((m->action & ACT_GROUP_MASK) == ACT_GROUP_CUTSCENE) || ((m2->action & ACT_GROUP_MASK) == ACT_GROUP_CUTSCENE);
     isInCutscene = isInCutscene || (m->action == ACT_IN_CANNON) || (m2->action == ACT_IN_CANNON);
     u8 isInvulnerable = (m2->action & ACT_FLAG_INVULNERABLE) || m2->invincTimer != 0 || m2->hurtCounter != 0 || isInCutscene;
-    if ((interaction & INT_ANY_ATTACK) && !(interaction & INT_HIT_FROM_ABOVE) && !isInvulnerable) {
+    u8 isIgnoredAttack = (m->action == ACT_JUMP || m->action == ACT_DOUBLE_JUMP);
+    if ((interaction & INT_ANY_ATTACK) && !(interaction & INT_HIT_FROM_ABOVE) && !isInvulnerable && !isIgnoredAttack) {
 
         // determine if slide attack should be ignored
         if ((interaction & INT_ATTACK_SLIDE) && player_is_sliding(m2)) {
@@ -1784,6 +1787,11 @@ u32 interact_cap(struct MarioState *m, UNUSED u32 interactType, struct Object *o
     u32 capFlag = get_mario_cap_flag(o);
     u16 capMusic = 0;
     u16 capTime = 0;
+
+    if (capFlag == MARIO_NORMAL_CAP) {
+        // refuse normal cap when already on head
+        if (m->flags & (MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD)) { return FALSE; }
+    }
 
     if (m->action != ACT_GETTING_BLOWN && capFlag != 0) {
         m->interactObj = o;

@@ -14,6 +14,14 @@ bool network_player_any_connected(void) {
     return false;
 }
 
+u8 network_player_connected_count(void) {
+    u8 count = 0;
+    for (int i = 1; i < MAX_PLAYERS; i++) {
+        if (gNetworkPlayers[i].connected) { count++; }
+    }
+    return count;
+}
+
 void network_player_update(void) {
     float elapsed = (clock() - gLastNetworkSend) / (float)CLOCKS_PER_SEC;
     if (elapsed > NETWORK_PLAYER_TIMEOUT / 3.0f) {
@@ -81,7 +89,7 @@ u8 network_player_connected(enum NetworkPlayerType type, u8 globalIndex) {
         np->lastReceived = clock();
         gNetworkSystem->save_id(i);
         if (type == NPT_SERVER) { gNetworkPlayerServer = np; }
-        chat_add_message("player connected", CMT_SYSTEM);
+        else { chat_add_message("player connected", CMT_SYSTEM); }
         LOG_INFO("player connected, local %d, global %d", i, globalIndex);
         extern s16 sCurrPlayMode;
         if (gNetworkType == NT_SERVER && sCurrPlayMode == PLAY_MODE_SYNC_LEVEL) {

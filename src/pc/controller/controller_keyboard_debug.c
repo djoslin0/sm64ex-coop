@@ -5,7 +5,7 @@
 
 #ifdef DEBUG
 
-static u8 warpToLevel = LEVEL_BOB;
+static u8 warpToLevel = LEVEL_SSL;
 
 #define SCANCODE_0 0x0B
 #define SCANCODE_3 0x04
@@ -69,6 +69,8 @@ static void debug_warp_level(u8 level) {
 }
 
 static void debug_warp_area() {
+    /*level_trigger_warp(&gMarioStates[0], WARP_OP_CREDITS_START);
+    return;*/
     if (sCurrPlayMode == PLAY_MODE_CHANGE_LEVEL) { return; }
     if (sCurrPlayMode == PLAY_MODE_SYNC_LEVEL) { return; }
 
