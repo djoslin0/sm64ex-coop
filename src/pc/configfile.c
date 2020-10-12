@@ -105,6 +105,7 @@ unsigned int configPlayerInteraction         = 1;
 unsigned int configPlayerKnockbackStrength   = 25;
 unsigned int configStayInLevelAfterStar      = 0;
 unsigned int configNetworkSystem             = 0;
+bool         configLuigiSounds               = true;
 
 static const struct ConfigOption options[] = {
     {.name = "fullscreen",           .type = CONFIG_TYPE_BOOL, .boolValue = &configWindow.fullscreen},
