@@ -25,6 +25,7 @@
 char sConnectionJoinError[128] = { 0 };
 char gConnectionText[128] = { 0 };
 struct CustomMenu* sConnectMenu = NULL;
+
 u8 gOpenConnectMenu = FALSE;
 s8 sGotoGame = 0;
 
@@ -64,8 +65,8 @@ static void host_menu_draw_strings(void) {
     }
 
     buttonText[2] = configStayInLevelAfterStar ? "Stay in level after star." : "Leave level after star.";
-    
-    buttonText[3] = configIntroSkip ? "Play intro cutscene." : "Skip intro cutscene.";
+
+    buttonText[3] = configSkipIntro ? "Skip intro cutscene." : "Play intro cutscene.";
 
     #ifdef DISCORD_SDK
         buttonText[4] = (configNetworkSystem == 0) ? "Host through Discord." : "Host direct connection.";
@@ -73,17 +74,17 @@ static void host_menu_draw_strings(void) {
 
     // display server setting strings
     for (int i = 0; i < HOST_MENU_MAX_ITEMS; i++) {
-        print_generic_ascii_string(95, 158 + -35 * i, buttonText[i]);
+        print_generic_ascii_string(95, 181 + -33.5 * i, buttonText[i]);
     }
 
     // display direct connection warning
     if (configNetworkSystem != 0) {
-        print_generic_ascii_string(0, 30, "For direct connections -");
+        print_generic_ascii_string(0, 20, "For direct connections -");
         f32 red = (f32)fabs(sin(gGlobalTimer / 20.0f));
         gDPSetEnvColor(gDisplayListHead++, 222, 222 * red, 222 * red, gMenuStringAlpha);
         char warning[128];
         snprintf(warning, 127, "You must forward port '%d' in your router or use Hamachi.", configHostPort);
-        print_generic_ascii_string(0, 15, warning);
+        print_generic_ascii_string(0, 5, warning);
 
     }
 }
@@ -131,7 +132,7 @@ static void host_menu_setting_stay_in_level(void) {
 }
 
 static void host_menu_setting_skip_intro(void) {
-    configSkipIntro = (configSkipIntro == 0) ? 1 : 0;
+    configSkipIntro = (configSkipIntro == 1) ? 0 : 1;
 }
 
 #ifdef DISCORD_SDK
@@ -217,7 +218,7 @@ static void connect_menu_on_click(void) {
 
     // fill in our last attempt
     if (configJoinPort == 0 || configJoinPort > 65535) { configJoinPort = DEFAULT_PORT; }
-    
+
     // only print custom port
     if (configJoinPort == DEFAULT_PORT) {
         sprintf(gTextInput, "%s", configJoinIp);
@@ -243,30 +244,30 @@ void custom_menu_init(struct CustomMenu* head) {
     head->draw_strings = menu_main_draw_strings;
 
     // create sub menus and buttons
-    struct CustomMenu* hostMenu = custom_menu_create(head, "HOST", -266, 0);
+    struct CustomMenu* hostMenu = custom_menu_create(head, "HOST", -266, 20, gButtonScale.large);
     hostMenu->draw_strings = host_menu_draw_strings;
-    custom_menu_create_button(hostMenu, "CANCEL", 700, -400 + (250 * 3), SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
-    custom_menu_create_button(hostMenu, "HOST", 700, -400, SOUND_MENU_CAMERA_ZOOM_IN, host_menu_do_host);
-    custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 4), SOUND_ACTION_BONK, host_menu_setting_skip_intro);
-    custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 3), SOUND_ACTION_BONK, host_menu_setting_interaction);
-    custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 2), SOUND_ACTION_BONK, host_menu_setting_knockback);
-    custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 1), SOUND_ACTION_BONK, host_menu_setting_stay_in_level);
+    custom_menu_create_button(hostMenu, "CANCEL", 700, -237 + (240 * 3), gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
+    custom_menu_create_button(hostMenu, "HOST", 700, -290, gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_IN, host_menu_do_host);
+    custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 3), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_interaction);
+    custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 2), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_knockback);
+    custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 1), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_stay_in_level);
+        custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 0), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_skip_intro);
     #ifdef DISCORD_SDK
-        custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 0), SOUND_ACTION_BONK, host_menu_setting_network_system);
+        custom_menu_create_button(hostMenu, "", -700, -220 + (240 * -1), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_network_system);
     #endif
 
     #ifdef DISCORD_SDK
-        struct CustomMenu* joinMenu = custom_menu_create(head, "JOIN", 266, 0);
-        custom_menu_create_button(joinMenu, "CANCEL", -266, -320, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
+        struct CustomMenu* joinMenu = custom_menu_create(head, "JOIN", 266, 0, gButtonScale.small);
+        custom_menu_create_button(joinMenu, "CANCEL", -266, -320, gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
         joinMenu->draw_strings = join_menu_draw_strings;
-        struct CustomMenu* connectMenu = custom_menu_create(joinMenu, "CONNECT", 266, -320);
+        struct CustomMenu* connectMenu = custom_menu_create(joinMenu, "CONNECT", 266, -320, gButtonScale.large);
     #else
-        struct CustomMenu* connectMenu = custom_menu_create(head, "CONNECT", 266, 0);
+        struct CustomMenu* connectMenu = custom_menu_create(head, "CONNECT", 266, 0, gButtonScale.large);
     #endif
     connectMenu->me->on_click = connect_menu_on_click;
     connectMenu->on_close = connect_menu_on_close;
     connectMenu->draw_strings = connect_menu_draw_strings;
-    custom_menu_create_button(connectMenu, "CANCEL", 0, -400, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
+    custom_menu_create_button(connectMenu, "CANCEL", 0, -400, gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
     sConnectMenu = connectMenu;
 }
 
