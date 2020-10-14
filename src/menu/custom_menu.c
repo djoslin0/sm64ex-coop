@@ -41,7 +41,7 @@ static void menu_main_draw_strings(void) {
 
 static void host_menu_draw_strings(void) {
     #ifdef DISCORD_SDK
-        #define HOST_MENU_MAX_ITEMS 4
+        #define HOST_MENU_MAX_ITEMS 5
     #else
         #define HOST_MENU_MAX_ITEMS 3
     #endif
@@ -64,9 +64,11 @@ static void host_menu_draw_strings(void) {
     }
 
     buttonText[2] = configStayInLevelAfterStar ? "Stay in level after star." : "Leave level after star.";
+    
+    buttonText[3] = configIntroSkip ? "Play intro cutscene." : "Skip intro cutscene.";
 
     #ifdef DISCORD_SDK
-        buttonText[3] = (configNetworkSystem == 0) ? "Host through Discord." : "Host direct connection.";
+        buttonText[4] = (configNetworkSystem == 0) ? "Host through Discord." : "Host direct connection.";
     #endif
 
     // display server setting strings
@@ -126,6 +128,10 @@ static void host_menu_setting_knockback(void) {
 
 static void host_menu_setting_stay_in_level(void) {
     configStayInLevelAfterStar = (configStayInLevelAfterStar == 0) ? 1 : 0;
+}
+
+static void host_menu_setting_skip_intro(void) {
+    configSkipIntro = (configSkipIntro == 0) ? 1 : 0;
 }
 
 #ifdef DISCORD_SDK
@@ -241,6 +247,7 @@ void custom_menu_init(struct CustomMenu* head) {
     hostMenu->draw_strings = host_menu_draw_strings;
     custom_menu_create_button(hostMenu, "CANCEL", 700, -400 + (250 * 3), SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
     custom_menu_create_button(hostMenu, "HOST", 700, -400, SOUND_MENU_CAMERA_ZOOM_IN, host_menu_do_host);
+    custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 4), SOUND_ACTION_BONK, host_menu_setting_skip_intro);
     custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 3), SOUND_ACTION_BONK, host_menu_setting_interaction);
     custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 2), SOUND_ACTION_BONK, host_menu_setting_knockback);
     custom_menu_create_button(hostMenu, "", -700, -400 + (250 * 1), SOUND_ACTION_BONK, host_menu_setting_stay_in_level);
