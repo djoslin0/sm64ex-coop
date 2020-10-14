@@ -52,6 +52,7 @@ bool network_init(enum NetworkType inNetworkType) {
     gServerSettings.playerInteractions = configPlayerInteraction;
     gServerSettings.playerKnockbackStrength = configPlayerKnockbackStrength;
     gServerSettings.stayInLevelAfterStar = configStayInLevelAfterStar;
+    gServerSettings.skipIntro = configSkipIntro;
 
     // initialize the network system
     int rc = gNetworkSystem->initialize(inNetworkType);
