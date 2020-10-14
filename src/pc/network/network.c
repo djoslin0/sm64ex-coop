@@ -27,7 +27,7 @@ struct StringLinkedList gRegisteredMods = { 0 };
 
 struct ServerSettings gServerSettings = {
     .playerInteractions = PLAYER_INTERACTIONS_SOLID,
-    .skipIntro = NO_SKIP,
+    .skipIntro = 0,
     .playerKnockbackStrength = 25,
 };
 

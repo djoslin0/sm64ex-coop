@@ -70,16 +70,11 @@ enum PlayerInteractions {
     PLAYER_INTERACTIONS_PVP,
 };
 
-enum IntroSkip {
-    SKIP,
-    NO_SKIP,
-};
-
 struct ServerSettings {
     enum PlayerInteractions playerInteractions;
-    enum IntroSkip introSkip;
     u8 playerKnockbackStrength;
     u8 stayInLevelAfterStar;
+    u8 skipIntro;
 };
 
 // Networking-specific externs
