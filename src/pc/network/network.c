@@ -28,6 +28,7 @@ struct StringLinkedList gRegisteredMods = { 0 };
 struct ServerSettings gServerSettings = {
     .playerInteractions = PLAYER_INTERACTIONS_SOLID,
     .playerKnockbackStrength = 25,
+    .skipIntro = SKIP_INTRO,
 };
 
 void network_set_system(enum NetworkSystemType nsType) {
@@ -51,6 +52,7 @@ bool network_init(enum NetworkType inNetworkType) {
     gServerSettings.playerInteractions = configPlayerInteraction;
     gServerSettings.playerKnockbackStrength = configPlayerKnockbackStrength;
     gServerSettings.stayInLevelAfterStar = configStayInLevelAfterStar;
+    gServerSettings.skipIntro = skipIntro;
 
     // initialize the network system
     int rc = gNetworkSystem->initialize(inNetworkType);
