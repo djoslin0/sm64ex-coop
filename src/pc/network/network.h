@@ -75,6 +75,7 @@ struct ServerSettings {
     u8 playerKnockbackStrength;
     u8 stayInLevelAfterStar;
     u8 skipIntro;
+    u8 shareLives;
 };
 
 // Networking-specific externs
