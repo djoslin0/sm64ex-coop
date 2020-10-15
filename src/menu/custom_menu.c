@@ -42,9 +42,9 @@ static void menu_main_draw_strings(void) {
 
 static void host_menu_draw_strings(void) {
     #ifdef DISCORD_SDK
-        #define HOST_MENU_MAX_ITEMS 4
+        #define HOST_MENU_MAX_ITEMS 5
     #else
-        #define HOST_MENU_MAX_ITEMS 3
+        #define HOST_MENU_MAX_ITEMS 4
     #endif
 
     // set up server setting strings
