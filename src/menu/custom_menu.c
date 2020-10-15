@@ -257,7 +257,7 @@ void custom_menu_init(struct CustomMenu* head) {
     #endif
 
     #ifdef DISCORD_SDK
-        struct CustomMenu* joinMenu = custom_menu_create(head, "JOIN", 266, 0, gButtonScale.small);
+        struct CustomMenu* joinMenu = custom_menu_create(head, "JOIN", 266, 0, gButtonScale.large);
         custom_menu_create_button(joinMenu, "CANCEL", -266, -320, gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
         joinMenu->draw_strings = join_menu_draw_strings;
         struct CustomMenu* connectMenu = custom_menu_create(joinMenu, "CONNECT", 266, -320, gButtonScale.large);
