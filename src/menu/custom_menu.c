@@ -42,9 +42,9 @@ static void menu_main_draw_strings(void) {
 
 static void host_menu_draw_strings(void) {
     #ifdef DISCORD_SDK
-        #define HOST_MENU_MAX_ITEMS 5
+        #define HOST_MENU_MAX_ITEMS 6
     #else
-        #define HOST_MENU_MAX_ITEMS 4
+        #define HOST_MENU_MAX_ITEMS 5
     #endif
 
     // set up server setting strings
@@ -68,22 +68,23 @@ static void host_menu_draw_strings(void) {
 
     buttonText[3] = configSkipIntro ? "Skip intro cutscene." : "Play intro cutscene.";
 
+    buttonText[4] = configShareLives ? "Share lives." : "Lives are not shared.";
+
     #ifdef DISCORD_SDK
-        buttonText[4] = (configNetworkSystem == 0) ? "Host through Discord." : "Host direct connection.";
+        buttonText[5] = (configNetworkSystem == 0) ? "Host through Discord." : "Host direct connection.";
     #endif
 
     // display server setting strings
     for (int i = 0; i < HOST_MENU_MAX_ITEMS; i++) {
-        print_generic_ascii_string(95, 181 + -33.5 * i, buttonText[i]);
+        print_generic_ascii_string(95, 173 + -29 * i, buttonText[i]);
     }
 
     // display direct connection warning
     if (configNetworkSystem != 0) {
-        print_generic_ascii_string(0, 20, "For direct connections -");
         f32 red = (f32)fabs(sin(gGlobalTimer / 20.0f));
         gDPSetEnvColor(gDisplayListHead++, 222, 222 * red, 222 * red, gMenuStringAlpha);
         char warning[128];
-        snprintf(warning, 127, "You must forward port '%d' in your router or use Hamachi.", configHostPort);
+        snprintf(warning, 127, "Port forward '%d' in network router settings or use Hamachi.", configHostPort);
         print_generic_ascii_string(0, 5, warning);
 
     }
@@ -133,6 +134,10 @@ static void host_menu_setting_stay_in_level(void) {
 
 static void host_menu_setting_skip_intro(void) {
     configSkipIntro = (configSkipIntro == 1) ? 0 : 1;
+}
+
+static void host_menu_setting_share_lives(void) {
+    configShareLives = (configShareLives == 0) ? 1 : 0;
 }
 
 #ifdef DISCORD_SDK
@@ -244,16 +249,18 @@ void custom_menu_init(struct CustomMenu* head) {
     head->draw_strings = menu_main_draw_strings;
 
     // create sub menus and buttons
-    struct CustomMenu* hostMenu = custom_menu_create(head, "HOST", -266, 20, gButtonScale.large);
+    struct CustomMenu* hostMenu = custom_menu_create(head, "HOST", -266, 0, gButtonScale.large);
+    hostMenu->headerY = 30;
     hostMenu->draw_strings = host_menu_draw_strings;
-    custom_menu_create_button(hostMenu, "CANCEL", 700, -237 + (240 * 3), gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
-    custom_menu_create_button(hostMenu, "HOST", 700, -290, gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_IN, host_menu_do_host);
-    custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 3), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_interaction);
-    custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 2), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_knockback);
-    custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 1), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_stay_in_level);
-        custom_menu_create_button(hostMenu, "", -700, -220 + (240 * 0), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_skip_intro);
+    custom_menu_create_button(hostMenu, "CANCEL", 700, -196 + (210 * 3), gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_OUT, custom_menu_close);
+    custom_menu_create_button(hostMenu, "HOST", 700, -220, gButtonScale.large, SOUND_MENU_CAMERA_ZOOM_IN, host_menu_do_host);
+    custom_menu_create_button(hostMenu, "", -700, -180 + (210 * 3), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_interaction);
+    custom_menu_create_button(hostMenu, "", -700, -180 + (210 * 2), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_knockback);
+    custom_menu_create_button(hostMenu, "", -700, -180 + (210 * 1), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_stay_in_level);
+    custom_menu_create_button(hostMenu, "", -700, -180 + (210 * 0), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_skip_intro);
+    custom_menu_create_button(hostMenu, "", -700, -180 + (210 * -1), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_share_lives);
     #ifdef DISCORD_SDK
-        custom_menu_create_button(hostMenu, "", -700, -220 + (240 * -1), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_network_system);
+        custom_menu_create_button(hostMenu, "", -700, -180 + (210 * -2), gButtonScale.medium, SOUND_ACTION_BONK, host_menu_setting_network_system);
     #endif
 
     #ifdef DISCORD_SDK

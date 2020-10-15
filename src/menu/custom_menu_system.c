@@ -28,10 +28,6 @@ struct CustomMenuButtonScale gButtonScale = {
     .large = 0.11111111f,
 };
 
-//buttonScale.SMALL = 0.08111111f;
-//buttonScale.MEDIUM = 0.09511111f;
-//buttonScale.LARGE = 0.11111111f;
-
 u8 gMenuStringAlpha = 255;
 static u8 sErrorDialog[MAX_ERROR_MESSAGE_LENGTH] = { 0 };
 static u8 sErrorDialogShow = FALSE;
