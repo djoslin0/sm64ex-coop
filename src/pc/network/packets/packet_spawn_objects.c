@@ -6,20 +6,12 @@
 #include "behavior_data.h"
 #include "behavior_table.h"
 
-static u8 localSpawnId = 1;
-
-// two-player hack: the remoteSpawnId stuff is only valid for the one remote player
-// will need to be extended if MAX_PLAYERS is ever increased
-#define MAX_REMOTE_SPAWN_IDS 16
-static u8 remoteSpawnIds[MAX_REMOTE_SPAWN_IDS] = { 0 };
-static u8 onRemoteSpawnId = 0;
-
 #define MAX_SPAWN_OBJECTS_PER_PACKET 8
 
 struct SpawnObjectData {
     u8 parentId;
     u32 model;
-    enum BehaviorId behaviorId;
+    u16 behaviorId;
     s16 activeFlags;
     s32 rawData[80];
 };
@@ -47,17 +39,16 @@ void network_send_spawn_objects(struct Object* objects[], u32 models[], u8 objec
 
     struct Packet p;
     packet_init(&p, PACKET_SPAWN_OBJECTS, true, true);
-    packet_write(&p, &localSpawnId, sizeof(u8));
     packet_write(&p, &objectCount, sizeof(u8));
 
     for (u8 i = 0; i < objectCount; i++) {
         struct Object* o = objects[i];
         u32 model = models[i];
         u8 parentId = generate_parent_id(objects, i);
-        enum BehaviorId behaviorId = get_id_from_behavior(o->behavior);
+        u16 behaviorId = get_id_from_behavior(o->behavior);
         packet_write(&p, &parentId, sizeof(u8));
         packet_write(&p, &model, sizeof(u32));
-        packet_write(&p, &behaviorId, sizeof(enum BehaviorId));
+        packet_write(&p, &behaviorId, sizeof(u16));
         packet_write(&p, &o->activeFlags, sizeof(s16));
         packet_write(&p, o->rawData.asU32, sizeof(s32) * 80);
         packet_write(&p, &o->header.gfx.scale[0], sizeof(f32));
@@ -66,31 +57,14 @@ void network_send_spawn_objects(struct Object* objects[], u32 models[], u8 objec
     }
 
     network_send(&p);
-
-    localSpawnId++;
-    if (localSpawnId == 0) { localSpawnId++; }
 }
 
 void network_receive_spawn_objects(struct Packet* p) {
-    u8 remoteSpawnId = 0;
     u8 objectCount = 0;
 
-    packet_read(p, &remoteSpawnId, sizeof(u8));
     packet_read(p, &objectCount, sizeof(u8));
 
-    // check if remote spawn id has already been seen
-    for (u16 i = 0; i < MAX_REMOTE_SPAWN_IDS; i++) {
-        if (remoteSpawnIds[i] == remoteSpawnId) {
-            // we already saw this event!
-            return;
-        }
-    }
-    // cache the seen id
-    remoteSpawnIds[onRemoteSpawnId] = remoteSpawnId;
-    onRemoteSpawnId = (onRemoteSpawnId + 1) % MAX_REMOTE_SPAWN_IDS;
-
-    // two-player hack
-    u8 reserveId = (gNetworkLevelLoaded && gNetworkType == NT_SERVER) ? 1 : 0;
+    u8 reserveId = gNetworkLevelLoaded ? gNetworkPlayers[p->localIndex].globalIndex : 0;
     bool receivedReservedSyncObject = false;
 
     struct Object* spawned[MAX_SPAWN_OBJECTS_PER_PACKET] = { 0 };
@@ -99,7 +73,7 @@ void network_receive_spawn_objects(struct Packet* p) {
         Vec3f scale = { 0 };
         packet_read(p, &data.parentId, sizeof(u8));
         packet_read(p, &data.model, sizeof(u32));
-        packet_read(p, &data.behaviorId, sizeof(enum BehaviorId));
+        packet_read(p, &data.behaviorId, sizeof(u16));
         packet_read(p, &data.activeFlags, sizeof(s16));
         packet_read(p, &data.rawData, sizeof(s32) * 80);
         packet_read(p, &scale[0], sizeof(f32));
@@ -152,6 +126,6 @@ void network_receive_spawn_objects(struct Packet* p) {
 
     // update their block of reserved ids
     if (gNetworkType == NT_SERVER && receivedReservedSyncObject) {
-        network_send_reservation();
+        network_send_reservation(p->localIndex);
     }
 }

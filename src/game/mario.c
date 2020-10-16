@@ -1930,8 +1930,8 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             if (gMarioState->freeze < 2 && sCurrPlayMode == PLAY_MODE_PAUSED) { gMarioState->freeze = 2; }
         }
 
-        // two-player hack: drop held object if server is holding it
-        if (gNetworkType == NT_CLIENT && gMarioState->playerIndex == 0 && gMarioState->heldObj != NULL) {
+        // drop held object if someone else is holding it
+        if (gMarioState->playerIndex == 0 && gMarioState->heldObj != NULL) {
             u8 inCutscene = ((gMarioState->action & ACT_GROUP_MASK) != ACT_GROUP_CUTSCENE);
             if (!inCutscene && gMarioState->heldObj->heldByPlayerIndex != 0) {
                 drop_and_set_mario_action(gMarioState, ACT_IDLE, 0);
@@ -2076,17 +2076,14 @@ static void init_single_mario(struct MarioState* m) {
     vec3s_to_vec3f(m->pos, spawnInfo->startPos);
     vec3f_set(m->vel, 0, 0, 0);
 
-    // two-player hack
-    u8 isLocal = (m->playerIndex == 0);
-    f32 spawnAngle = m->faceAngle[1] + 0x4000;
-    if ((gNetworkType == NT_CLIENT && isLocal) || (gNetworkType == NT_SERVER && !isLocal)) {
-        m->pos[0] += 60.0f * sins(spawnAngle);
-        m->pos[2] += 60.0f * coss(spawnAngle);
-    }
-    else {
-        m->pos[0] -= 60.0f * sins(spawnAngle);
-        m->pos[2] -= 60.0f * coss(spawnAngle);
-    }
+    // offset spawning
+    u8 connectedPlayers = network_player_connected_count();
+    u8 globalIndex = gNetworkPlayers[m->playerIndex].globalIndex;
+    u16 spawnAngle = m->faceAngle[1] + 0x4000 + 0x10000 * ((f32)globalIndex / ((f32)connectedPlayers + 1));
+    f32 spawnMag = 60.0f * ((connectedPlayers + 1) / 2.0f);
+    if (spawnMag > 120) { spawnMag = 120; }
+    m->pos[0] -= spawnMag * sins(spawnAngle);
+    m->pos[2] -= spawnMag * coss(spawnAngle);
 
     m->floorHeight = find_floor(m->pos[0], m->pos[1], m->pos[2], &m->floor);
 
@@ -2126,8 +2123,9 @@ static void init_single_mario(struct MarioState* m) {
     }
 
     // set mario/luigi model
-    // two-player hack
-    m->marioObj->header.gfx.sharedChild = gLoadedGraphNodes[(gNetworkPlayers[0].globalIndex == 1) ? MODEL_LUIGI : MODEL_MARIO];
+    enum CharacterType characterType = (gNetworkPlayers[0].globalIndex == 1) ? CT_LUIGI : CT_MARIO;
+    m->character = &gCharacters[characterType];
+    m->marioObj->header.gfx.sharedChild = gLoadedGraphNodes[m->character->modelId];
 }
 
 void init_mario(void) {
@@ -2138,7 +2136,6 @@ void init_mario(void) {
 }
 
 static void init_mario_single_from_save_file(struct MarioState* m, u16 index) {
-    // two-player hack
     m->playerIndex = index;
     m->flags = 0;
     m->action = 0;

@@ -14,8 +14,23 @@ void packet_receive(struct Packet* p) {
     // send an ACK if requested
     network_send_ack(p);
 
+    // check if we've already seen this packet
+    if (p->localIndex != 0 && p->seqId != 0 && gNetworkPlayers[p->localIndex].connected) {
+        struct NetworkPlayer* np = &gNetworkPlayers[p->localIndex];
+        for (int i = 0; i < MAX_RX_SEQ_IDS; i++) {
+            if (np->rxSeqIds[i] == p->seqId) {
+                LOG_INFO("received duplicate packet");
+                return;
+            }
+        }
+        // remember seq id
+        np->rxSeqIds[np->onRxSeqId] = p->seqId;
+        np->onRxSeqId++;
+        if (np->onRxSeqId >= MAX_RX_SEQ_IDS) { np->onRxSeqId = 0; }
+    }
+
     // check if we should drop packet
-    if (!packet_initial_read(p)) { return; }
+    if (!packet_initial_read(p)) { LOG_ERROR("initial read failed (%d - %d)", packetType, p->levelAreaMustMatch); return; }
 
     switch (packetType) {
         case PACKET_ACK:                 network_receive_ack(p);                 break;
@@ -44,5 +59,19 @@ void packet_receive(struct Packet* p) {
         ///
         case PACKET_CUSTOM:              network_receive_custom(p);              break;
         default: LOG_ERROR("received unknown packet: %d", p->buffer[0]);
+    }
+
+    // broadcast packet
+    if (p->requestBroadcast) {
+        if (gNetworkType == NT_SERVER && gNetworkSystem->requireServerBroadcast) {
+            for (int i = 1; i < MAX_PLAYERS; i++) {
+                if (!gNetworkPlayers[i].connected) { continue; }
+                if (i == p->localIndex) { continue; }
+                struct Packet p2 = { 0 };
+                packet_init(&p2, packetType, p->reliable, p->levelAreaMustMatch);
+                packet_write(&p2, &p->buffer[p2.cursor], p->cursor - p2.cursor);
+                network_send_to(i, &p2);
+            }
+        }
     }
 }

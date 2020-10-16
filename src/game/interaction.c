@@ -295,7 +295,10 @@ u32 attack_object(struct Object *o, s32 interaction) {
 void mario_stop_riding_object(struct MarioState *m) {
     if (m->riddenObj != NULL && m->playerIndex == 0) {
         m->riddenObj->oInteractStatus = INT_STATUS_STOP_RIDING;
-        if (m->playerIndex == 0) { stop_shell_music(); }
+        if (m->riddenObj->oSyncID != 0) {
+            network_send_object_reliability(m->riddenObj, TRUE);
+        }
+        stop_shell_music();
         m->riddenObj = NULL;
     }
 }
@@ -1188,10 +1191,12 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
 u32 interact_cannon_base(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     if (o->oAction != 0) { return FALSE; }
+    if (m->playerIndex != 0) { return FALSE; }
 
     if (m->action != ACT_IN_CANNON) {
         mario_stop_riding_and_holding(m);
         o->oInteractStatus = INT_STATUS_INTERACTED;
+        o->oCannonPlayerIndex = 0;
         m->interactObj = o;
         m->usedObj = o;
         return set_mario_action(m, ACT_IN_CANNON, 0);
@@ -1274,6 +1279,15 @@ u32 interact_player(struct MarioState* m, UNUSED u32 interactType, struct Object
     }
     if (m2 == NULL) { return FALSE; }
     if (m2->action == ACT_JUMBO_STAR_CUTSCENE) { return FALSE; }
+
+    // vanish cap players can't interact
+    u32 vanishFlags = (MARIO_VANISH_CAP | MARIO_CAP_ON_HEAD);
+    if ((m->flags & vanishFlags) == vanishFlags) {
+        return FALSE;
+    }
+    if ((m2->flags & vanishFlags) == vanishFlags) {
+        return FALSE;
+    }
 
     // don't do further interactions if we've hopped on top
     if (resolve_player_collision(m, m2)) {
@@ -1699,8 +1713,15 @@ u32 interact_breakable(struct MarioState *m, UNUSED u32 interactType, struct Obj
 }
 
 u32 interact_koopa_shell(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
+    if (m->playerIndex != 0) { return FALSE; }
+
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
         return FALSE;
+    }
+
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        if (!is_player_active(&gMarioStates[i])) { continue; }
+        if (gMarioStates[i].riddenObj == o) { return FALSE; }
     }
 
     if (!(m->action & ACT_FLAG_RIDING_SHELL)) {

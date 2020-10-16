@@ -19,6 +19,7 @@
 static int64_t applicationId = 752700005210390568;
 struct DiscordApplication app = { 0 };
 bool gDiscordInitialized = false;
+bool gDiscordFailed = false;
 
 void discord_fatal(int rc) {
 #if defined(_WIN32) || defined(_WIN64)
@@ -139,9 +140,17 @@ static bool ns_discord_initialize(enum NetworkType networkType) {
         params.lobby_events = discord_lobby_initialize();
 
         int rc = DiscordCreate(DISCORD_VERSION, &params, &app.core);
-        if (rc) {
+        gDiscordFailed = false;
+        if (networkType != NT_NONE) {
+#ifdef UNSTABLE_BRANCH
+            // refuse to host on discord for unstable branch
+            exit(1);
+#endif
+            DISCORD_REQUIRE(rc);
+        } else if (rc) {
             LOG_ERROR("DiscordCreate failed: %d", rc);
             custom_menu_error("Could not detect Discord.\n\nTry closing the game,\nrestarting Discord,\nand opening the game again.");
+            gDiscordFailed = true;
             return false;
         }
 
@@ -178,11 +187,11 @@ static void ns_discord_shutdown(void) {
 }
 
 struct NetworkSystem gNetworkSystemDiscord = {
-    .initialize   = ns_discord_initialize,
-    .save_id      = ns_discord_save_id,
-    .clear_id     = ns_discord_clear_id,
-    .update       = ns_discord_update,
-    .send         = ns_discord_network_send,
-    .shutdown     = ns_discord_shutdown,
-    .canBroadcast = true,
+    .initialize = ns_discord_initialize,
+    .save_id    = ns_discord_save_id,
+    .clear_id   = ns_discord_clear_id,
+    .update     = ns_discord_update,
+    .send       = ns_discord_network_send,
+    .shutdown   = ns_discord_shutdown,
+    .requireServerBroadcast = false,
 };

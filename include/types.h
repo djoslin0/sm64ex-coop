@@ -6,7 +6,7 @@
 
 #include <ultra64.h>
 #include "macros.h"
-
+#include "src/game/characters.h"
 
 // Certain functions are marked as having return values, but do not
 // actually return a value. This causes undefined behavior, which we'd rather
@@ -377,6 +377,7 @@ struct MarioState
     /*????*/ int splineState;
 
     /*????*/ Vec3f nonInstantWarpPos;
+    /*????*/ struct Character* character;
 };
 
 #define PLAY_MODE_NORMAL 0
@@ -389,7 +390,11 @@ struct MarioState
 // NOTE: this defines the maximum number of players...
 //       HOWEVER, simply increasing this to 3 will not magically work
 //       many things will have to be overhauled!
+#ifdef UNSTABLE_BRANCH
+#define MAX_PLAYERS 4
+#else
 #define MAX_PLAYERS 2
+#endif
 // are you still deciding to increase it?
 // networking will have to be rewritten to have more than one destination. 'reliable' messages would need to be sent per-player
 // things that base priority on whether they are the host or not would need priority based on player index instead

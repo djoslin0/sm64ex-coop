@@ -1,51 +1,49 @@
 #include <stdio.h>
 #include "../network.h"
 #include "game/chat.h"
+#include "pc/debuglog.h"
 
-static u8 localChatId = 1;
+#ifdef DEVELOPMENT
+#include "behavior_table.h"
 
-// two-player hack: the remoteChatIds stuff is only valid for the one remote player
-// will need to be extended if MAX_PLAYERS is ever increased
-#define MAX_CHAT_IDS 16
-static u8 remoteChatIds[MAX_CHAT_IDS] = { 0 };
-static u8 onRemoteChatId = 0;
+static void print_sync_object_table(void) {
+    LOG_INFO("Sync Object Table");
+    for (int i = 0; i < MAX_SYNC_OBJECTS; i++) {
+        if (gSyncObjects[i].o == NULL) { continue; }
+        u16 behaviorId = get_id_from_behavior(gSyncObjects[i].behavior);
+        LOG_INFO("%03d: %04X", i, behaviorId);
+    }
+    LOG_INFO(" ");
+}
+#endif
 
 void network_send_chat(char* message) {
     u16 messageLength = strlen(message);
     struct Packet p;
     packet_init(&p, PACKET_CHAT, true, false);
-    packet_write(&p, &localChatId, sizeof(u8));
     packet_write(&p, &messageLength, sizeof(u16));
     packet_write(&p, message, messageLength * sizeof(u8));
-
     network_send(&p);
-    localChatId++;
+    LOG_INFO("tx chat: %s", message);
+
+#ifdef DEVELOPMENT
+    print_sync_object_table();
+#endif
 }
 
 void network_receive_chat(struct Packet* p) {
-    u8 remoteChatId = 0;
     u16 remoteMessageLength = 0;
     char remoteMessage[255] = { 0 };
 
-    packet_read(p, &remoteChatId, sizeof(u8));
     packet_read(p, &remoteMessageLength, sizeof(u16));
     if (remoteMessageLength > 255) { remoteMessageLength = 254; }
     packet_read(p, &remoteMessage, remoteMessageLength * sizeof(u8));
 
-    // check if remote chat id has already been seen
-    for (u16 i = 0; i < MAX_CHAT_IDS; i++) {
-        if (remoteChatIds[i] == remoteChatId) {
-            // we already saw this message!
-            return;
-        }
-    }
-
-    // cache the seen id
-    remoteChatIds[onRemoteChatId] = remoteChatId;
-    onRemoteChatId = (onRemoteChatId + 1) % MAX_CHAT_IDS;
-
     // add the message
     chat_add_message(remoteMessage, CMT_REMOTE);
+    LOG_INFO("rx chat: %s", remoteMessage);
 
-    return;
+#ifdef DEVELOPMENT
+    print_sync_object_table();
+#endif
 }
