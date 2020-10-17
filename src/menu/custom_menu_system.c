@@ -96,7 +96,11 @@ void custom_menu_system_init(void) {
 }
 
 void custom_menu_destroy(void) {
-    /* TODO: we should probably clean up all of this stuff */
+    free(sHead);
+    sHead = NULL;
+    sCurrentMenu = NULL;
+    sLastMenu = NULL;
+    overlay = NULL;
 }
 
 void custom_menu_system_loop(void) {
