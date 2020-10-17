@@ -100,7 +100,6 @@ void custom_menu_destroy(void) {
     sHead = NULL;
     sCurrentMenu = NULL;
     sLastMenu = NULL;
-    int overlay = NULL;
 }
 
 void custom_menu_system_loop(void) {
