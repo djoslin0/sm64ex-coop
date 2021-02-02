@@ -498,7 +498,7 @@ else
 endif
 
 ifeq ($(DISCORD_SDK),0)
-  LD := $(CC)
+  LD := $(CXX)
 endif
 
 #ifeq ($(DISCORDRPC),1)
