@@ -497,6 +497,10 @@ else
   CXX := emcc
 endif
 
+ifeq ($(DISCORD_SDK),0)
+  LD := $(CXX)
+endif
+
 #ifeq ($(DISCORDRPC),1)
 ifeq ($(DISCORD_SDK),1)
   LD := $(CXX)
