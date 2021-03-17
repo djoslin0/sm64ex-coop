@@ -10,6 +10,6 @@ unsigned char gMusicData[] = {
 #include "sound/sequences.bin.inc.c"
 };
 
-unsigned char gBankSetsData[] = {
+unsigned char gBankSetsData[256] = {
 #include "sound/bank_sets.inc.c"
 };
