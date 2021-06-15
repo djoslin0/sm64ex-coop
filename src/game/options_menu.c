@@ -86,7 +86,7 @@ static const u8 optsVideoStr[][32] = {
 };
 
 static const u8 optsAudioStr[][32] = {
-    { TEXT_OPT_MVOLUME },    
+    { TEXT_OPT_MVOLUME },
     { TEXT_OPT_MUSVOLUME },
     { TEXT_OPT_SFXVOLUME },
     { TEXT_OPT_ENVVOLUME },
@@ -282,10 +282,17 @@ static struct Option optsCheats[] = {
     DEF_OPT_TOGGLE( optsCheatsStr[3], &Cheats.InfiniteLives ),
     DEF_OPT_TOGGLE( optsCheatsStr[4], &Cheats.SuperSpeed ),
     DEF_OPT_TOGGLE( optsCheatsStr[5], &Cheats.Responsive ),
+};
 
+const static u8 billboardsTitle[] = { 0x0B, 0x2C, 0x2F, 0x2F, 0x25, 0x32, 0x24, 0x35, 0x27, 0x36, 0xFF };
+
+static struct Option optsGame[] = {
+    DEF_OPT_TOGGLE( billboardsTitle, &configBillboardsEnabled ),
 };
 
 /* submenu definitions */
+
+const static u8 gameTitle[] = { 0x10, 0x0A, 0x16, 0x0E, 0xFF };
 
 #ifdef BETTERCAMERA
 static struct SubMenu menuCamera   = DEF_SUBMENU( menuStr[4], optsCamera );
@@ -294,10 +301,12 @@ static struct SubMenu menuControls = DEF_SUBMENU( menuStr[5], optsControls );
 static struct SubMenu menuVideo    = DEF_SUBMENU( menuStr[6], optsVideo );
 static struct SubMenu menuAudio    = DEF_SUBMENU( menuStr[7], optsAudio );
 static struct SubMenu menuCheats   = DEF_SUBMENU( menuStr[9], optsCheats );
+static struct SubMenu menuGame     = DEF_SUBMENU( gameTitle,  optsGame );
 
 /* main options menu definition */
 
 static struct Option optsMain[] = {
+    DEF_OPT_SUBMENU( gameTitle,  &menuGame ),
 #ifdef BETTERCAMERA
     DEF_OPT_SUBMENU( menuStr[4], &menuCamera ),
 #endif
@@ -509,7 +518,7 @@ void optmenu_toggle(void) {
 
         currentMenu = &menuMain;
         optmenu_open = 1;
-        
+
         /* Resets l_counter to 0 every time the options menu is open */
         l_counter = 0;
     } else {
@@ -541,9 +550,9 @@ void optmenu_check_buttons(void) {
 
     if (gPlayer1Controller->buttonPressed & R_TRIG)
         optmenu_toggle();
-    
+
     /* Enables cheats if the user press the L trigger 3 times while in the options menu. Also plays a sound. */
-    
+
     if ((gPlayer1Controller->buttonPressed & L_TRIG) && !Cheats.EnableCheats) {
         if (l_counter == 2) {
                 Cheats.EnableCheats = true;
@@ -553,7 +562,7 @@ void optmenu_check_buttons(void) {
             l_counter++;
         }
     }
-    
+
     if (!optmenu_open) return;
 
     u8 allowInput = 0;
