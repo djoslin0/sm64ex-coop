@@ -74,6 +74,8 @@ extern unsigned int configStayInLevelAfterStar;
 extern unsigned int configNetworkSystem;
 extern bool         configLuigiSounds;
 
+extern bool         configBillboardsEnabled;
+
 void configfile_load(const char *filename);
 void configfile_save(const char *filename);
 const char *configfile_name(void);

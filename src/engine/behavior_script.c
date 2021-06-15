@@ -15,6 +15,7 @@
 #include "surface_collision.h"
 #include "pc/network/network.h"
 #include "game/rng_position.h"
+#include "pc/configfile.h"
 
 // Macros for retrieving arguments from behavior scripts.
 #define BHV_CMD_GET_1ST_U8(index)  (u8)((gCurBhvCommand[index] >> 24) & 0xFF) // unused
@@ -163,7 +164,8 @@ static s32 bhv_cmd_disable_rendering(void) {
 // Command 0x21: Billboards the current object, making it always face the camera.
 // Usage: BILLBOARD()
 static s32 bhv_cmd_billboard(void) {
-    gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
+    if(configBillboardsEnabled)
+        gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
 
     gCurBhvCommand++;
     return BHV_PROC_CONTINUE;
@@ -171,7 +173,8 @@ static s32 bhv_cmd_billboard(void) {
 
 // Command 0x
 static s32 bhv_cmd_cylboard(void) {
-    gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_CYLBOARD;
+    if(configBillboardsEnabled)
+        gCurrentObject->header.gfx.node.flags |= GRAPH_RENDER_CYLBOARD;
 
     gCurBhvCommand++;
     return BHV_PROC_CONTINUE;
