@@ -99,6 +99,15 @@ static void host_menu_draw_strings(void) {
         snprintf(warning, 127, "Discord failed to initialize.");
         print_generic_ascii_string(0, 15, warning);
     }
+#ifdef UNSTABLE_BRANCH
+    else if (configNetworkSystem == 0) {
+        f32 red = (f32)fabs(sin(gGlobalTimer / 20.0f));
+        gDPSetEnvColor(gDisplayListHead++, 222, 222 * red, 222 * red, gMenuStringAlpha);
+        char warning[128];
+        snprintf(warning, 127, "Discord does not currently work on unstable!");
+        print_generic_ascii_string(45, 5, warning);
+    }
+#endif
 #endif
 }
 
