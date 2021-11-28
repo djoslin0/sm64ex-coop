@@ -1,4 +1,5 @@
 # sm64ex-coop
+Uhh so I am planning on uploading my changes later.
 Online cooperative multiplayer mod for SM64, aiming to synchronize all entities and every level for two players.
 Fork of [sm64pc/sm64ex](https://github.com/sm64pc/sm64ex). 
 
