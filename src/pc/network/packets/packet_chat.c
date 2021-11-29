@@ -180,6 +180,7 @@ palettename = "Fire";
 #endif
 
 void network_send_chat(char* message, u8 globalIndex) {
+    static void print_sync_object_table(void)
     u16 messageLength = strlen(message);
     struct Packet p;
     
