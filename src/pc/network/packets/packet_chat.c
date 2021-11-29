@@ -4,7 +4,7 @@
 #include "pc/djui/djui.h"
 #include "pc/debuglog.h"
 
-#ifdef DEVELOPMENT
+// #ifdef DEVELOPMENT
 #include "behavior_table.h"
 
 static void print_sync_object_table(void) {
@@ -177,10 +177,10 @@ palettename = "Fire";
     }
     fprintf (stdout, " \n");
 }
-#endif
+// #endif
 
 void network_send_chat(char* message, u8 globalIndex) {
-    static void print_sync_object_table(void)
+
     u16 messageLength = strlen(message);
     struct Packet p;
     
