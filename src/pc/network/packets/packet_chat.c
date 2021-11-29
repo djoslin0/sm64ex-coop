@@ -182,12 +182,20 @@ palettename = "Fire";
 void network_send_chat(char* message, u8 globalIndex) {
     u16 messageLength = strlen(message);
     struct Packet p;
+    
+    if (strstr(message, "/print"))
+{
+                print_network_player_table();
+    } else {
+    fprintf(stdout, message);
+    fprintf(stdout, "\n");
     packet_init(&p, PACKET_CHAT, true, PLMT_NONE);
     packet_write(&p, &globalIndex, sizeof(u8));
     packet_write(&p, &messageLength, sizeof(u16));
     packet_write(&p, message, messageLength * sizeof(u8));
     network_send(&p);
-
+    };
+    
 #ifdef DEVELOPMENT
     print_network_player_table();
     //reservation_area_debug();
@@ -207,6 +215,13 @@ void network_receive_chat(struct Packet* p) {
 
     // add the message
     djui_chat_message_create_from(globalIndex, remoteMessage);
+    struct NetworkPlayer* np = network_player_from_global_index(globalIndex);
+    fprintf(stdout, (np != NULL) ? np->name : "Player");
+    fprintf (stdout, ": ");
+    fprintf (stdout, remoteMessage);
+    fprintf (stdout, " ");
+    fprintf( stdout, "\n" );
+    
     LOG_INFO("rx chat: %s", remoteMessage);
     /*
 #ifdef DEVELOPMENT
