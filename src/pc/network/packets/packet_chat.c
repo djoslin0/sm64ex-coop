@@ -198,7 +198,7 @@ void network_send_chat(char* message, u8 globalIndex) {
     };
     
 #ifdef DEVELOPMENT
-    print_network_player_table();
+//     print_network_player_table();
     //reservation_area_debug();
     //print_sync_object_table();
 #endif
@@ -226,7 +226,7 @@ void network_receive_chat(struct Packet* p) {
     LOG_INFO("rx chat: %s", remoteMessage);
     /*
 #ifdef DEVELOPMENT
-    print_network_player_table();
+//     print_network_player_table();
 #endif
     */
 }
