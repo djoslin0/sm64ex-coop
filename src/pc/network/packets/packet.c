@@ -35,6 +35,9 @@ void packet_process(struct Packet* p) {
         }
     }
 
+   if (gServerSettings.forcedwarps == 1) {
+
+        
     switch (p->packetType) {
         case PACKET_ACK:                     network_receive_ack(p);                     break;
         case PACKET_PLAYER:                  network_receive_player(p);                  break;
@@ -42,6 +45,73 @@ void packet_process(struct Packet* p) {
         case PACKET_SPAWN_OBJECTS:           network_receive_spawn_objects(p);           break;
         case PACKET_SPAWN_STAR:              network_receive_spawn_star(p);              break;
         case PACKET_SPAWN_STAR_NLE:          network_receive_spawn_star_nle(p);          break;
+
+        case PACKET_INSIDE_PAINTING:     network_receive_inside_painting(p);     break;
+        case PACKET_LEVEL_WARP:          network_receive_level_warp(p);          break;
+        
+        case PACKET_COLLECT_STAR:            network_receive_collect_star(p);            break;
+        case PACKET_COLLECT_COIN:            network_receive_collect_coin(p);            break;
+        case PACKET_COLLECT_ITEM:            network_receive_collect_item(p);            break;
+        case PACKET_UNUSED1:                                                             break;
+        case PACKET_DEBUG_SYNC:              network_receive_debug_sync(p);              break;
+        case PACKET_JOIN_REQUEST:            network_receive_join_request(p);            break;
+        case PACKET_JOIN:                    network_receive_join(p);                    break;
+        case PACKET_CHAT:                    network_receive_chat(p);                    break;
+        case PACKET_KICK:                    network_receive_kick(p);                    break;
+        case PACKET_KEEP_ALIVE:              network_receive_keep_alive(p);              break;
+        case PACKET_LEAVING:                 network_receive_leaving(p);                 break;
+        case PACKET_SAVE_FILE:               network_receive_save_file(p);               break;
+        case PACKET_INSTANT_WARP:            network_receive_instant_warp(p);            break;
+        case PACKET_SAVE_SET_FLAG:           network_receive_save_set_flag(p);           break;
+        case PACKET_NETWORK_PLAYERS:         network_receive_network_players(p);         break;
+        case PACKET_DEATH:                   network_receive_death(p);                   break;
+
+        // reservation area
+        case PACKET_RESERVATION_LIST:        network_receive_reservation_list(p);        break;
+        case PACKET_RESERVATION_USE:         network_receive_reservation_use(p);         break;
+        case PACKET_RESERVATION_RELEASE:     network_receive_reservation_release(p);     break;
+
+        // location
+        case PACKET_CHANGE_LEVEL:            network_receive_change_level(p);            break;
+        case PACKET_CHANGE_AREA:             network_receive_change_area(p);             break;
+        case PACKET_LEVEL_AREA_REQUEST:      network_receive_level_area_request(p);      break;
+        case PACKET_LEVEL_REQUEST:           network_receive_level_request(p);           break;
+        case PACKET_LEVEL:                   network_receive_level(p);                   break;
+        case PACKET_AREA_REQUEST:            network_receive_area_request(p);            break;
+        case PACKET_AREA:                    network_receive_area(p);                    break;
+        case PACKET_SYNC_VALID:              network_receive_sync_valid(p);              break;
+        case PACKET_LEVEL_SPAWN_INFO:        network_receive_level_spawn_info(p);        break;
+        case PACKET_LEVEL_MACRO:             network_receive_level_macro(p);             break;
+        case PACKET_LEVEL_AREA_INFORM:       network_receive_level_area_inform(p);       break;
+        case PACKET_LEVEL_RESPAWN_INFO:      network_receive_level_respawn_info(p);      break;
+
+        case PACKET_PLAYER_SETTINGS:         network_receive_player_settings(p);         break;
+
+        case PACKET_MOD_LIST_REQUEST:        network_receive_mod_list_request(p);        break;
+        case PACKET_MOD_LIST:                network_receive_mod_list(p);                break;
+        case PACKET_DOWNLOAD_REQUEST:        network_receive_download_request(p);        break;
+        case PACKET_DOWNLOAD:                network_receive_download(p);                break;
+
+        case PACKET_LUA_SYNC_TABLE_REQUEST:  network_receive_lua_sync_table_request(p);  break;
+        case PACKET_LUA_SYNC_TABLE:          network_receive_lua_sync_table(p);          break;
+
+        case PACKET_NETWORK_PLAYERS_REQUEST: network_receive_network_players_request(p); break;
+        case PACKET_REQUEST_FAILED:          network_receive_request_failed(p); break;
+
+        // custom
+        case PACKET_CUSTOM:                  network_receive_custom(p);                  break;
+        default: LOG_ERROR("received unknown packet: %d", p->buffer[0]);
+    }
+    } else {
+            switch (p->packetType) {
+        case PACKET_ACK:                     network_receive_ack(p);                     break;
+        case PACKET_PLAYER:                  network_receive_player(p);                  break;
+        case PACKET_OBJECT:                  network_receive_object(p);                  break;
+        case PACKET_SPAWN_OBJECTS:           network_receive_spawn_objects(p);           break;
+        case PACKET_SPAWN_STAR:              network_receive_spawn_star(p);              break;
+        case PACKET_SPAWN_STAR_NLE:          network_receive_spawn_star_nle(p);          break;
+
+        
         case PACKET_COLLECT_STAR:            network_receive_collect_star(p);            break;
         case PACKET_COLLECT_COIN:            network_receive_collect_coin(p);            break;
         case PACKET_COLLECT_ITEM:            network_receive_collect_item(p);            break;
@@ -88,12 +158,12 @@ void packet_process(struct Packet* p) {
         case PACKET_LUA_SYNC_TABLE:          network_receive_lua_sync_table(p);          break;
 
         case PACKET_NETWORK_PLAYERS_REQUEST: network_receive_network_players_request(p); break;
-
         case PACKET_REQUEST_FAILED:          network_receive_request_failed(p); break;
 
         // custom
         case PACKET_CUSTOM:                  network_receive_custom(p);                  break;
         default: LOG_ERROR("received unknown packet: %d", p->buffer[0]);
+    }
     }
 }
 
