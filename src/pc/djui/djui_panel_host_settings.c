@@ -17,7 +17,7 @@ static void djui_panel_host_settings_knockback_change(UNUSED struct DjuiBase* ca
 }
 
 void djui_panel_host_settings_create(struct DjuiBase* caller) {
-    f32 bodyHeight = 32 * 7 + 64 * 1 + 16 * 7;
+    f32 bodyHeight = 32 * 7 + 64 * 1 + 25 * 7;
 
     struct DjuiBase* defaultBase = NULL;
     struct DjuiThreePanel* panel = djui_panel_menu_create(bodyHeight, "\\#ff0800\\S\\#1be700\\E\\#00b3ff\\T\\#ffef00\\T\\#ff0800\\I\\#1be700\\N\\#00b3ff\\G\\#ffef00\\S");
@@ -56,6 +56,9 @@ void djui_panel_host_settings_create(struct DjuiBase* caller) {
         struct DjuiCheckbox* checkbox5 = djui_checkbox_create(&body->base, "Bubble on death", &configBubbleDeath);
         djui_base_set_size_type(&checkbox5->base, DJUI_SVT_RELATIVE, DJUI_SVT_ABSOLUTE);
         djui_base_set_size(&checkbox5->base, 1.0f, 32);
+                struct DjuiCheckbox* checkbox6 = djui_checkbox_create(&body->base, "Forced Warps", &configforcewarp);
+        djui_base_set_size_type(&checkbox6->base, DJUI_SVT_RELATIVE, DJUI_SVT_ABSOLUTE);
+        djui_base_set_size(&checkbox6->base, 1.0f, 32);
 
         struct DjuiButton* button1 = djui_button_create(&body->base, "Back");
         djui_base_set_size_type(&button1->base, DJUI_SVT_RELATIVE, DJUI_SVT_ABSOLUTE);
