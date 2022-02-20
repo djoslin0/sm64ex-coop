@@ -19,6 +19,8 @@ enum PacketType {
     PACKET_SPAWN_OBJECTS,
     PACKET_SPAWN_STAR,
     PACKET_SPAWN_STAR_NLE,
+    PACKET_LEVEL_WARP,
+    PACKET_INSIDE_PAINTING,
     PACKET_COLLECT_STAR,
     PACKET_COLLECT_COIN,
     PACKET_COLLECT_ITEM,
@@ -31,6 +33,7 @@ enum PacketType {
     PACKET_KEEP_ALIVE,
     PACKET_LEAVING,
     PACKET_SAVE_FILE,
+    PACKET_INSTANT_WARP,
     PACKET_SAVE_SET_FLAG,
     PACKET_NETWORK_PLAYERS,
     PACKET_DEATH,
@@ -179,6 +182,19 @@ void network_send_object_reliability(struct Object* o, bool reliable);
 void network_receive_object(struct Packet* p);
 void network_forget_sync_object(struct SyncObject* so);
 void network_update_objects(void);
+
+// packet_level_warp.c
+void network_send_level_warp_begin(void);
+void network_send_level_warp_repeat(void);
+void network_receive_level_warp(struct Packet* p);
+
+// packet_inside_painting.c
+void network_send_inside_painting(void);
+void network_receive_inside_painting(struct Packet* p);
+
+// packet_instant_warp.c
+void network_send_instant_warp(void);
+void network_receive_instant_warp(struct Packet* p);
 
 // packet_spawn_object.c
 void network_send_spawn_objects(struct Object* objects[], u32 models[], u8 objectCount);
