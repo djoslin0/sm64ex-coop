@@ -57,6 +57,7 @@ s8 sSelectableStarIndex = 0;
 
 // Act Selector menu timer that keeps counting until you choose an act.
 static s32 sActSelectorMenuTimer = 0;
+extern u8 gControlledWarpGlobalIndex;
 
 /**
  * Act Selector Star Type Loop Action
@@ -181,8 +182,11 @@ void bhv_act_selector_loop(void) {
         // This code filters selectable and non-selectable stars.
         sSelectedActIndex = 0;
 
+        if (gControlledWarpGlobalIndex == gNetworkPlayerLocal->globalIndex) {
+            s8 oldIndex = sSelectableStarIndex;
         handle_menu_scrolling(MENU_SCROLL_HORIZONTAL, &sSelectableStarIndex, 0, sObtainedStars);
-
+            if (oldIndex != sSelectableStarIndex) { network_send_inside_painting(); }
+        }
         starIndexCounter = sSelectableStarIndex;
         for (i = 0; i < sVisibleStars; i++) {
             // Can the star be selected (is it either already completed or the first non-completed mission)
@@ -294,6 +298,17 @@ void print_act_selector_strings(void) {
 #endif
 
     create_dl_ortho_matrix();
+        if (gServerSettings.forcedwarps == 1) {
+
+    // display disclaimer that the other player has to select
+    if (gControlledWarpGlobalIndex != gNetworkPlayerLocal->globalIndex) {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        u8 a = ((gGlobalTimer % 24) >= 12) ? 160 : 130;
+        gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, a);
+        print_generic_ascii_string(66, 212, "Waiting for other player's selection...");
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    }
+    }
 
 #ifdef VERSION_EU
     switch (language) {
@@ -475,13 +490,16 @@ s32 lvl_update_obj_and_load_act_button_actions(UNUSED s32 arg, UNUSED s32 unused
     if (sActSelectorMenuTimer >= 11) {
         // If any of these buttons are pressed, play sound and go to course act
 #ifndef VERSION_EU
+if (gControlledWarpGlobalIndex == gNetworkPlayerLocal->globalIndex) {
         if ((gPlayer1Controller->buttonPressed & A_BUTTON)
          || (gPlayer1Controller->buttonPressed & START_BUTTON)
          || (gPlayer1Controller->buttonPressed & B_BUTTON)) {
 #else
         if ((gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON | B_BUTTON | Z_TRIG))) {
 #endif
+        
             star_select_finish_selection();
+        }
         }
     }
 
@@ -507,6 +525,9 @@ void star_select_finish_selection(void) {
     } else {
         sLoadedActNum = sInitSelectedActNum;
     }
-    gDialogCourseActNum = sSelectedActIndex + 1;
+    gDialogCourseActNum = sSelectedActIndex;
     gCurrActStarNum = gDialogCourseActNum;
+    if (gServerSettings.forcedwarps == 1) {
+    if (gControlledWarpGlobalIndex == gNetworkPlayerLocal->globalIndex) { network_send_inside_painting(); }
+    }
 }
