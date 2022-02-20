@@ -52,6 +52,7 @@ struct ServerSettings gServerSettings = {
     .enableCheats = 0,
     .bubbleDeath = 1,
     .headlessServer = 0,
+    .forcedwarps = 0,
 };
 
 void network_set_system(enum NetworkSystemType nsType) {
@@ -85,6 +86,7 @@ bool network_init(enum NetworkType inNetworkType) {
 #else
     gServerSettings.headlessServer = 0;
 #endif
+    gServerSettings.forcedwarps = configforcewarp;
     Cheats.EnableCheats = gServerSettings.enableCheats;
 
     // initialize the network system
