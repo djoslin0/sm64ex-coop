@@ -67,6 +67,7 @@ extern bool         configCameraAnalog;
 #endif
 extern bool         configHUD;
 extern bool         configSkipIntro;
+extern bool         configforcewarp;
 extern bool         configShareLives;
 extern bool         configEnableCheats;
 extern bool         configBubbleDeath;
