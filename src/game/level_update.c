@@ -52,6 +52,7 @@
 struct SavedWarpValues gReceiveWarp = { 0 };
 extern s8 sReceivedLoadedActNum;
 u8 gRejectInstantWarp = 0;
+u8 gControlledWarpGlobalIndex = 0;
 
 s16 gChangeLevel = -1;
 s16 gChangeLevelTransition = -1;
@@ -1057,6 +1058,35 @@ void basic_update(UNUSED s16 *arg) {
     }
 }
 
+static void check_received_warp(void) {
+    extern float gPaintingMarioYEntry;
+    if (!gReceiveWarp.received) { return; }
+    gReceiveWarp.received = FALSE;
+
+    // keep do_warp(void) in sync with this
+    sWarpDest = gReceiveWarp.warpDest;
+    gInWarpCheckpoint = gReceiveWarp.inWarpCheckpoint;
+    gTTCSpeedSetting = gReceiveWarp.ttcSpeedSetting;
+    D_80339EE0 = gReceiveWarp.D_80339EE0;
+    gPaintingMarioYEntry = gReceiveWarp.paintingMarioYEntry;
+
+    if (gControlledWarpGlobalIndex != gNetworkPlayerLocal->globalIndex) {
+        // force well behaved state
+        extern s16 gMenuMode;
+        gMenuMode = -1;
+        reset_dialog_render_state();
+        reset_screen_transition_timers();
+    }
+
+    set_play_mode((sWarpDest.type == WARP_TYPE_CHANGE_LEVEL)
+                  ? PLAY_MODE_CHANGE_LEVEL
+                  : PLAY_MODE_CHANGE_AREA);
+
+    s8 warpCourse = gLevelToCourseNumTable[sWarpDest.levelNum - 1];
+    if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL && warpCourse == COURSE_NONE) {
+        sReceivedLoadedActNum = 0;
+    }
+}
 int gPressedStart = 0;
 
 s32 play_mode_normal(void) {
@@ -1109,8 +1139,14 @@ s32 play_mode_normal(void) {
             }
         } else if (!gReceiveWarp.received) {
             if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL) {
+ 
+                if (gServerSettings.forcedwarps == 1) {
+                set_play_mode(PLAY_MODE_SYNC_LEVEL);
+                network_send_level_warp_begin();
+                } else {
                 set_play_mode(PLAY_MODE_CHANGE_LEVEL);
-            } else if (sTransitionTimer != 0) {
+                }
+                            } else if (sTransitionTimer != 0) {
                 set_play_mode(PLAY_MODE_CHANGE_AREA);
             } else if (sCurrPlayMode == PLAY_MODE_NORMAL && pressed_pause()) {
                 lower_background_noise(1);
@@ -1118,6 +1154,9 @@ s32 play_mode_normal(void) {
                 gCameraMovementFlags |= CAM_MOVE_PAUSE_SCREEN;
                 set_play_mode(PLAY_MODE_PAUSED);
             }
+        }
+        if (gServerSettings.forcedwarps == 1) {
+        check_received_warp();
         }
     }
 
@@ -1144,7 +1183,12 @@ s32 play_mode_paused(void) {
             fade_into_special_warp(0, 0);
             gSavedCourseNum = COURSE_NONE;
         }
+        if (gServerSettings.forcedwarps == 1) {
+                    set_play_mode(PLAY_MODE_SYNC_LEVEL);
+        network_send_level_warp_begin();
+        } else {
         set_play_mode(PLAY_MODE_CHANGE_LEVEL);
+        }
     } /* else if (gPauseScreenMode == 4) {
         // We should only be getting "int 4" to here
         initiate_warp(LEVEL_CASTLE, 1, 0x1F, 0);
@@ -1153,6 +1197,21 @@ s32 play_mode_paused(void) {
     }*/
 
     gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
+        if (gServerSettings.forcedwarps == 1) {
+    check_received_warp();
+    }
+    return 0;
+}
+
+s32 play_mode_sync_level(void) {
+    if (gServerSettings.forcedwarps == 1) {
+    // force unpause state
+    raise_background_noise(1);
+    set_menu_mode(-1);
+    gCameraMovementFlags &= ~CAM_MOVE_PAUSE_SCREEN;
+
+    check_received_warp();
+    }
     return 0;
 }
 
@@ -1304,6 +1363,9 @@ s32 update_level(void) {
             break;
         case PLAY_MODE_FRAME_ADVANCE:
             changeLevel = play_mode_frame_advance();
+            break;
+                    case PLAY_MODE_SYNC_LEVEL:
+            changeLevel = play_mode_sync_level();
             break;
     }
 
