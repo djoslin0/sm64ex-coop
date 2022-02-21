@@ -136,11 +136,11 @@ static void djui_panel_join_ip_text_set(struct DjuiInputbox* inputbox1) {
 }
 
 void djui_panel_join_do_join(struct DjuiBase* caller) {
-//     if (!djui_panel_join_ip_valid(sInputboxIp->buffer)) {
-//         djui_interactable_set_input_focus(&sInputboxIp->base);
-//         djui_inputbox_select_all(sInputboxIp);
-//         return;
-//     }
+    // if (!djui_panel_join_ip_valid(sInputboxIp->buffer)) {
+    //     djui_interactable_set_input_focus(&sInputboxIp->base);
+    //     djui_inputbox_select_all(sInputboxIp);
+    //     return;
+    // }
     djui_panel_join_ip_text_set_new();
     network_set_system(NS_SOCKET);
     network_init(NT_CLIENT);
