@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include "socket.h"
+#include "pc/configfile.h"
+#include "pc/debuglog.h"
+#include "pc/djui/djui.h"
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+void domain_resolution(void) {
+struct in_addr addr;
+    char **pAlias;
+    WSADATA wsaData;
+    char *host_name;
+    struct hostent *remoteHost;
+    int iResult;
+    char* domainname = "";
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    int i = 0;
+    remoteHost = gethostbyname(host_name);
+    // for (pAlias = remoteHost->h_aliases; *pAlias != 0; pAlias++) {}
+    i = 0;
+    if (remoteHost->h_addrtype == AF_INET) {
+
+    while (remoteHost->h_addr_list[i] != 0) {
+                addr.s_addr = *(u_long *) remoteHost->h_addr_list[i++];
+                domainname = inet_ntoa(addr);
+                snprintf(configJoinIp, MAX_CONFIG_STRING, "%s", domainname);
+            }
+}
+}
