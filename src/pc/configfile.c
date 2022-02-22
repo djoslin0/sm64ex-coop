@@ -184,7 +184,7 @@ static const struct ConfigOption options[] = {
     {.name = "coop_join_port",                 .type = CONFIG_TYPE_UINT  , .uintValue   = &configJoinPort},
     {.name = "coop_host_port",                 .type = CONFIG_TYPE_UINT  , .uintValue   = &configHostPort},
     {.name = "coop_host_save_slot",            .type = CONFIG_TYPE_UINT  , .uintValue   = &configHostSaveSlot},
-    {.name = "coop_forced_warp",        .type = CONFIG_TYPE_BOOL  , .boolValue   = &configforcewarp},
+    {.name = "coop_forced_warp",               .type = CONFIG_TYPE_BOOL  , .boolValue   = &configforcewarp},
     {.name = "coop_player_interaction",        .type = CONFIG_TYPE_UINT  , .uintValue   = &configPlayerInteraction},
     {.name = "coop_player_knockback_strength", .type = CONFIG_TYPE_UINT  , .uintValue   = &configPlayerKnockbackStrength},
     {.name = "coop_stay_in_level_after_star",  .type = CONFIG_TYPE_UINT  , .boolValue   = &configStayInLevelAfterStar},
