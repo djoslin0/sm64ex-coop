@@ -565,7 +565,7 @@ void warp_credits(void) {
 
     for (int i = 0; i < MAX_PLAYERS; i++) {
         vec3s_set(gPlayerSpawnInfos[i].startPos, gCurrCreditsEntry->marioPos[0],
-                  gCurrCreditsEntry->marioPos[1], gCurrCreditsEntry->marioPos[2]);
+        gCurrCreditsEntry->marioPos[1], gCurrCreditsEntry->marioPos[2]);
 
         vec3s_set(gPlayerSpawnInfos[i].startAngle, 0, 0x100 * gCurrCreditsEntry->marioAngle, 0);
 
@@ -1095,8 +1095,7 @@ s32 play_mode_normal(void) {
         if (gPlayer1Controller->buttonPressed & END_DEMO) {
             level_trigger_warp(gMarioState,
                                gCurrLevelNum == LEVEL_PSS ? WARP_OP_DEMO_END : WARP_OP_DEMO_NEXT);
-        } else if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE
-                   && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
+        } else if (!gWarpTransition.isActive && sDelayedWarpOp == WARP_OP_NONE && (gPlayer1Controller->buttonPressed & START_BUTTON)) {
             gPressedStart = 1;
             level_trigger_warp(gMarioState, WARP_OP_DEMO_NEXT);
         }
@@ -1146,7 +1145,7 @@ s32 play_mode_normal(void) {
                 } else {
                 set_play_mode(PLAY_MODE_CHANGE_LEVEL);
                 }
-                            } else if (sTransitionTimer != 0) {
+               } else if (sTransitionTimer != 0) {
                 set_play_mode(PLAY_MODE_CHANGE_AREA);
             } else if (sCurrPlayMode == PLAY_MODE_NORMAL && pressed_pause()) {
                 lower_background_noise(1);
@@ -1364,7 +1363,7 @@ s32 update_level(void) {
         case PLAY_MODE_FRAME_ADVANCE:
             changeLevel = play_mode_frame_advance();
             break;
-                    case PLAY_MODE_SYNC_LEVEL:
+        case PLAY_MODE_SYNC_LEVEL:
             changeLevel = play_mode_sync_level();
             break;
     }
