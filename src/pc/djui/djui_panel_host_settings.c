@@ -56,7 +56,8 @@ void djui_panel_host_settings_create(struct DjuiBase* caller) {
         struct DjuiCheckbox* checkbox5 = djui_checkbox_create(&body->base, "Bubble on death", &configBubbleDeath);
         djui_base_set_size_type(&checkbox5->base, DJUI_SVT_RELATIVE, DJUI_SVT_ABSOLUTE);
         djui_base_set_size(&checkbox5->base, 1.0f, 32);
-                struct DjuiCheckbox* checkbox6 = djui_checkbox_create(&body->base, "Forced Warps", &configforcewarp);
+        
+        struct DjuiCheckbox* checkbox6 = djui_checkbox_create(&body->base, "Forced Warps", &configforcewarp);
         djui_base_set_size_type(&checkbox6->base, DJUI_SVT_RELATIVE, DJUI_SVT_ABSOLUTE);
         djui_base_set_size(&checkbox6->base, 1.0f, 32);
 
