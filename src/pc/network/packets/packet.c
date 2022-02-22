@@ -46,8 +46,8 @@ void packet_process(struct Packet* p) {
         case PACKET_SPAWN_STAR:              network_receive_spawn_star(p);              break;
         case PACKET_SPAWN_STAR_NLE:          network_receive_spawn_star_nle(p);          break;
 
-        case PACKET_INSIDE_PAINTING:     network_receive_inside_painting(p);     break;
-        case PACKET_LEVEL_WARP:          network_receive_level_warp(p);          break;
+        case PACKET_INSIDE_PAINTING:         network_receive_inside_painting(p);          break;
+        case PACKET_LEVEL_WARP:              network_receive_level_warp(p);               break;
         
         case PACKET_COLLECT_STAR:            network_receive_collect_star(p);            break;
         case PACKET_COLLECT_COIN:            network_receive_collect_coin(p);            break;
@@ -164,7 +164,7 @@ void packet_process(struct Packet* p) {
         case PACKET_CUSTOM:                  network_receive_custom(p);                  break;
         default: LOG_ERROR("received unknown packet: %d", p->buffer[0]);
     }
-    }
+   }
 }
 
 void packet_receive(struct Packet* p) {
