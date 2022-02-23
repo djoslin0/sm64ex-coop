@@ -137,7 +137,7 @@ static void djui_panel_join_ip_text_set(struct DjuiInputbox* inputbox1) {
 }
 
 void djui_panel_join_do_join(struct DjuiBase* caller) {
-    if (!strlen(sInputboxIp) > 0) { return; }
+    if (!(strlen(sInputboxIp->buffer) > 0)) { return; }
     djui_panel_join_ip_text_set_new();
     network_set_system(NS_SOCKET);
     network_init(NT_CLIENT);
