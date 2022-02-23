@@ -72,6 +72,7 @@ static bool djui_panel_join_ip_parse_port(char** msg) {
 
 static bool djui_panel_join_ip_valid(char* buffer) {
     char** msg = &buffer;
+
     if (!djui_panel_join_ip_parse_numbers(msg)) { return false; }
     if (!djui_panel_join_ip_parse_period(msg))  { return false; }
     if (!djui_panel_join_ip_parse_numbers(msg)) { return false; }
@@ -87,12 +88,12 @@ static bool djui_panel_join_ip_valid(char* buffer) {
 }
 
 static void djui_panel_join_ip_text_change(struct DjuiBase* caller) {
-    struct DjuiInputbox* inputbox1 = (struct DjuiInputbox*)caller;
-    if (djui_panel_join_ip_valid(inputbox1->buffer)) {
-        djui_inputbox_set_text_color(inputbox1, 0, 0, 0, 255);
-    } else {
-        djui_inputbox_set_text_color(inputbox1, 255, 0, 0, 255);
-    }
+    // struct DjuiInputbox* inputbox1 = (struct DjuiInputbox*)caller;
+    // if (djui_panel_join_ip_valid(inputbox1->buffer)) {
+    //     djui_inputbox_set_text_color(inputbox1, 0, 0, 0, 255);
+    // } else {
+    //     djui_inputbox_set_text_color(inputbox1, 255, 0, 0, 255);
+    // }
 }
 
 static void djui_panel_join_ip_text_set_new(void) {
@@ -136,11 +137,7 @@ static void djui_panel_join_ip_text_set(struct DjuiInputbox* inputbox1) {
 }
 
 void djui_panel_join_do_join(struct DjuiBase* caller) {
-//     if (!djui_panel_join_ip_valid(sInputboxIp->buffer)) {
-//         djui_interactable_set_input_focus(&sInputboxIp->base);
-//         djui_inputbox_select_all(sInputboxIp);
-//         return;
-//     }
+    if (!strlen(sInputboxIp) > 0) { return; }
     djui_panel_join_ip_text_set_new();
     network_set_system(NS_SOCKET);
     network_init(NT_CLIENT);
