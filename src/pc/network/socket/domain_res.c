@@ -13,12 +13,10 @@
 void domain_resolution(void) {
 struct in_addr addr;
     char **pAlias;
-    WSADATA wsaData;
     char *host_name;
     struct hostent *remoteHost;
     int iResult;
     char* domainname = "";
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     int i = 0;
     remoteHost = gethostbyname(host_name);
     i = 0;
