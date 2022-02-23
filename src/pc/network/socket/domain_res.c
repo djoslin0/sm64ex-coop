@@ -3,8 +3,12 @@
 #include "pc/configfile.h"
 #include "pc/debuglog.h"
 #include "pc/djui/djui.h"
+#ifdef WINSOCK
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#else
+#include <netdb.h>
+#endif
 
 void domain_resolution(void) {
 struct in_addr addr;
