@@ -8,14 +8,27 @@
 #include <ws2tcpip.h>
 #else
 #include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h> /* for strncpy */
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+
 #endif
 
+
 void domain_resolution(void) {
-struct in_addr addr;
-    char **pAlias;
+    struct in_addr addr;
     char *host_name;
     struct hostent *remoteHost;
-    int iResult;
     char* domainname = "";
     int i = 0;
     remoteHost = gethostbyname(host_name);
@@ -27,5 +40,6 @@ struct in_addr addr;
           domainname = inet_ntoa(addr);
           snprintf(configJoinIp, MAX_CONFIG_STRING, "%s", domainname);
     }
+
   }
 }
