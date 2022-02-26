@@ -132,7 +132,7 @@ void djui_panel_join_do_join(struct DjuiBase* caller) {
         djui_interactable_set_input_focus(&sInputboxIp->base);
         djui_inputbox_select_all(sInputboxIp);
         return;
-        }
+     }
     djui_panel_join_ip_text_set_new();
     network_set_system(NS_SOCKET);
     network_init(NT_CLIENT);
