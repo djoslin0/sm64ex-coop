@@ -19,7 +19,6 @@ void domain_resolution(void) {
 	  return;
   }
   remoteHost = gethostbyname(configJoinIp);
-  i = 0;
   if (remoteHost->h_addrtype == AF_INET) {
 
     while (remoteHost->h_addr_list[i] != 0) {
