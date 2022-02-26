@@ -175,7 +175,6 @@ void djui_panel_join_create(struct DjuiBase* caller) {
         struct DjuiInputbox* inputbox1 = djui_inputbox_create(&body->base, 256);
         djui_base_set_size_type(&inputbox1->base, DJUI_SVT_RELATIVE, DJUI_SVT_ABSOLUTE);
         djui_base_set_size(&inputbox1->base, 1.0f, 32.0f);
-        djui_interactable_hook_value_change(&inputbox1->base, djui_panel_join_ip_text_change);
         sInputboxIp = inputbox1;
         djui_panel_join_ip_text_set(inputbox1);
 
