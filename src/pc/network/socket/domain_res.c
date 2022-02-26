@@ -13,15 +13,12 @@
 
 void domain_resolution(void) {
   struct in_addr addr;
-  char *host_name;
   struct hostent *remoteHost;
   char* domainname = "";
-  host_name = configJoinIp;
-  if (host_name == NULL) {
+  if (configJoinIp == NULL) {
 	  return;
   }
-  int i = 0;
-  remoteHost = gethostbyname(host_name);
+  remoteHost = gethostbyname(configJoinIp);
   i = 0;
   if (remoteHost->h_addrtype == AF_INET) {
 
