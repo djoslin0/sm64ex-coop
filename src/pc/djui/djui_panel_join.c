@@ -87,15 +87,6 @@ static bool djui_panel_join_ip_valid(char* buffer) {
     return (**msg == '\0');
 }
 
-static void djui_panel_join_ip_text_change(struct DjuiBase* caller) {
-    // struct DjuiInputbox* inputbox1 = (struct DjuiInputbox*)caller;
-    // if (djui_panel_join_ip_valid(inputbox1->buffer)) {
-    //     djui_inputbox_set_text_color(inputbox1, 0, 0, 0, 255);
-    // } else {
-    //     djui_inputbox_set_text_color(inputbox1, 255, 0, 0, 255);
-    // }
-}
-
 static void djui_panel_join_ip_text_set_new(void) {
     char buffer[256] = { 0 };
     snprintf(buffer, 256, "%s", sInputboxIp->buffer);
