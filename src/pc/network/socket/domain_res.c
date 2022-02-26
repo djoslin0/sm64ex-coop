@@ -15,13 +15,15 @@ void domain_resolution(void) {
   struct in_addr addr;
   struct hostent *remoteHost;
   char* domainname = "";
+  int i = 0;
   if (configJoinIp == NULL) {
 	  return;
   }
+  i = 0;
   remoteHost = gethostbyname(configJoinIp);
   if (remoteHost->h_addrtype == AF_INET) {
 
-    while (remoteHost->h_addr_list[i] != 0) {
+    while (remoteHost->h_addr_list != 0) {
           addr.s_addr = *(u_long *) remoteHost->h_addr_list[i++];
           domainname = inet_ntoa(addr);
           snprintf(configJoinIp, MAX_CONFIG_STRING, "%s", domainname);
