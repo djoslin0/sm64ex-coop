@@ -43,3 +43,5 @@ Sounds:
     Dark the Eagle :  Wario voice lines
 
 sm64ex-coop was built on top of sm64ex, which was built on top of the sm64 decomp project
+
+test
