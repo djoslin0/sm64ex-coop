@@ -132,6 +132,7 @@ struct PlayerColor gPlayerColors[PALETTE_MAX] = {
 
     DEFINE_PLAYER_COLOR(0xf7, 0x39, 0x00, /**/ 0x00, 0x00, 0x00),
     DEFINE_PLAYER_COLOR(0x4c, 0xaf, 0x50, /**/ 0x00, 0x00, 0x00),
+    DEFINE_PLAYER_COLOR(0x01, 0x7e, 0xff, /**/ 0x00, 0x00, 0x00),
 };
 
 const size_t gNumPlayerColors = sizeof(gPlayerColors) / sizeof(*gPlayerColors);
