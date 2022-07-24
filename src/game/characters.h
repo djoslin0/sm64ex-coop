@@ -4,7 +4,7 @@
 #include "types.h"
 // NOTE: do not include any additional headers
 
-#define PALETTE_MAX 34
+#define PALETTE_MAX 35
 
 enum CharacterType {
     CT_MARIO,
