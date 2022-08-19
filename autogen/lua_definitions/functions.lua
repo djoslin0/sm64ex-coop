@@ -7380,6 +7380,15 @@ function warp_to_level(aLevel, aArea, aAct)
     -- ...
 end
 
+--- @param aLevel integer
+--- @param aArea integer
+--- @param aAct integer
+--- @param aWarpId integer
+--- @return boolean
+function warp_to_warp_node(aLevel, aArea, aAct, aWarpId)
+    -- ...
+end
+
 --- @param actFlags integer
 --- @return integer
 function allocate_mario_action(actFlags)

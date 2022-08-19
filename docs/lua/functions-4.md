@@ -6226,6 +6226,29 @@
 
 <br />
 
+## [warp_to_warp_node](#warp_to_warp_node)
+
+### Lua Example
+`local booleanValue = warp_to_warp_node(aLevel, aArea, aAct, aWarpId)`
+
+### Parameters
+| Field | Type |
+| ----- | ---- |
+| aLevel | `integer` |
+| aArea | `integer` |
+| aAct | `integer` |
+| aWarpId | `integer` |
+
+### Returns
+- `boolean`
+
+### C Prototype
+`bool warp_to_warp_node(s32 aLevel, s32 aArea, s32 aAct, s32 aWarpId);`
+
+[:arrow_up_small:](#)
+
+<br />
+
 ---
 # functions from smlua_misc_utils.h
 
