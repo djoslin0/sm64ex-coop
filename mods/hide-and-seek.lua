@@ -7,19 +7,22 @@ gGlobalSyncTable.hideAndSeek = true
 
 -- keep track of round info
 ROUND_STATE_WAIT        = 0
-ROUND_STATE_ACTIVE      = 1
-ROUND_STATE_SEEKERS_WIN = 2
-ROUND_STATE_HIDERS_WIN  = 3
-ROUND_STATE_UNKNOWN_END = 4
+ROUND_STATE_HIDE        = 1
+ROUND_STATE_ACTIVE      = 2
+ROUND_STATE_SEEKERS_WIN = 3
+ROUND_STATE_HIDERS_WIN  = 4
+ROUND_STATE_UNKNOWN_END = 5
 gGlobalSyncTable.touchTag = true
 gGlobalSyncTable.campingTimer = false -- enable/disable camping timer
 gGlobalSyncTable.hiderCaps = true
 gGlobalSyncTable.seekerCaps = false
 gGlobalSyncTable.banKoopaShell = true
 gGlobalSyncTable.banRR = true
+gGlobalSyncTable.hideRound = false
 gGlobalSyncTable.roundState   = ROUND_STATE_WAIT -- current round state
 gGlobalSyncTable.displayTimer = 0 -- the displayed timer
 sRoundTimer        = 0            -- the server's round timer
+sRoundHideTimeout = 20 * 30       -- twenty seconds
 sRoundStartTimeout = 15 * 30      -- fifteen seconds
 sRoundEndTimeout   = 3 * 60 * 30  -- three minutes
 
@@ -91,6 +94,16 @@ function server_update(m)
         end
     end
 
+    -- check to see if it's time to hide
+    if gGlobalSyncTable.roundState == ROUND_STATE_HIDE then
+        if sRoundTimer > sRoundHideTimeout then
+            gGlobalSyncTable.roundState = ROUND_STATE_ACTIVE
+            sRoundTimer = 0
+            gGlobalSyncTable.displayTimer = 0
+        end
+        return
+    end
+
     -- start round
     if sRoundTimer >= sRoundStartTimeout then
         -- reset seekers
@@ -115,7 +128,11 @@ function server_update(m)
         end
 
         -- set round state
-        gGlobalSyncTable.roundState = ROUND_STATE_ACTIVE
+        if gGlobalSyncTable.hideRound then
+            gGlobalSyncTable.roundState = ROUND_STATE_HIDE
+        else
+            gGlobalSyncTable.roundState = ROUND_STATE_ACTIVE
+        end
         sRoundTimer = 0
         gGlobalSyncTable.displayTimer = 0
 
@@ -235,7 +252,15 @@ function mario_update(m)
             warp_to_castle(LEVEL_BITS)
         end
 
-        if gPlayerSyncTable[m.playerIndex].seeking and gGlobalSyncTable.displayTimer == 0 and gGlobalSyncTable.roundState == ROUND_STATE_ACTIVE then
+        -- teleport seekers at the start of the hider round if it is active
+        local transportRound
+        if gGlobalSyncTable.hideRound then
+            transportRound = ROUND_STATE_HIDE
+        else
+            transportRound = ROUND_STATE_ACTIVE
+        end
+
+        if gPlayerSyncTable[m.playerIndex].seeking and gGlobalSyncTable.displayTimer == 0 and gGlobalSyncTable.roundState == transportRound then
             warp_to_level(gLevelValues.entryLevel, 1, 0)
         end
     end
@@ -283,6 +308,14 @@ function mario_before_phys_step(m)
         return
     end
 
+    -- don't allow seekers to move while hiding is ongoing
+    if gGlobalSyncTable.roundState == ROUND_STATE_HIDE then
+        m.vel.x = 0
+        m.vel.y = 0
+        m.vel.z = 0
+        return
+    end
+
     local hScale = 1.0
     local vScale = 1.0
 
@@ -307,6 +340,11 @@ end
 function on_pvp_attack(attacker, victim)
     -- check gamemode enabled state
     if not gGlobalSyncTable.hideAndSeek then
+        return
+    end
+
+    -- disable PVP during hiding round
+    if gGlobalSyncTable.roundState == ROUND_STATE_HIDE then
         return
     end
 
@@ -344,6 +382,10 @@ function hud_top_render()
     if gGlobalSyncTable.roundState == ROUND_STATE_WAIT then
         seconds = 60
         text = 'waiting for players'
+    elseif gGlobalSyncTable.roundState == ROUND_STATE_HIDE then
+        seconds = math.floor(sRoundHideTimeout / 30 - gGlobalSyncTable.displayTimer)
+        if seconds < 0 then seconds = 0 end
+        text = 'hiders have ' .. seconds .. ' seconds'
     elseif gGlobalSyncTable.roundState == ROUND_STATE_ACTIVE then
         seconds = math.floor(sRoundEndTimeout / 30 - gGlobalSyncTable.displayTimer)
         if seconds < 0 then seconds = 0 end
@@ -441,11 +483,29 @@ function hud_center_render()
     djui_hud_print_text(text, x, y, scale);
 end
 
+function hud_hide_render()
+    -- do not render hide hud if not in the hide round
+    if not gGlobalSyncTable.hideAndSeek or gGlobalSyncTable.roundState ~= ROUND_STATE_HIDE then
+        return
+    end
+
+    local m = gPlayerSyncTable[0]
+
+    -- if current player is seeking, render a black rectangle over their screen
+    if m.seeking then
+        local screenWidth = djui_hud_get_screen_width()
+        local screenHeight = djui_hud_get_screen_height()
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(0, 0, screenWidth + 1, screenHeight + 1)
+    end
+end
+
 function on_hud_render()
     -- render to N64 screen space, with the HUD font
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_NORMAL)
 
+    hud_hide_render()
     hud_top_render()
     hud_bottom_render()
     hud_center_render()
@@ -558,6 +618,20 @@ function on_ban_rr_command(msg)
     return false
 end
 
+function on_hide_round_command(msg)
+    if msg == 'on' then
+        djui_chat_message_create('Hide round: enabled')
+        gGlobalSyncTable.hideRound = true
+        return true
+    elseif msg == 'off' then
+        djui_chat_message_create('Hide round: disabled')
+        gGlobalSyncTable.hideRound = false
+        return true
+    end
+
+    return false
+end
+
 function on_pause_exit(exitToCastle)
     local s = gPlayerSyncTable[0]
     if not s.seeking then
@@ -633,6 +707,11 @@ function on_interact(m, obj, intee)
             return
         end
 
+        -- disable interaction during the hide round
+        if gGlobalSyncTable.roundState == ROUND_STATE_HIDE then
+            return            
+        end
+
         if m ~= gMarioStates[0] then
             for i=0,(MAX_PLAYERS-1) do
                 if gNetworkPlayers[i].connected and gNetworkPlayers[i].currAreaSyncValid then
@@ -684,6 +763,7 @@ if network_is_server() then
   hook_chat_command('anti-camp', "[on|off] turn the anti-camp timer on or off", on_anti_camp_command)
   hook_chat_command('koopa-shell', "[on|off] Turn the koopa shell on or off", on_koopa_shell_command)
   hook_chat_command('ban-rr', "[on|off] Turn Banning RR on or off", on_ban_rr_command)
+  hook_chat_command('hide-round', "[on|off] Turn the hiding round on or off", on_hide_round_command)
 end
 
 -- call functions when certain sync table values change
