@@ -100,7 +100,6 @@ static void djui_panel_join_ip_text_change(struct DjuiBase* caller) {
 
 static void djui_panel_join_ip_text_set_new(void) {
     char buffer[256] = { 0 };
-    gGetHostName = sInputboxIp->buffer;
     if (snprintf(buffer, 256, "%s", sInputboxIp->buffer) < 0) {
         LOG_INFO("truncating IP");
     }

@@ -62,6 +62,8 @@ static bool ns_socket_initialize(enum NetworkType networkType) {
 
     // sanity check port
     unsigned int port = (networkType == NT_CLIENT) ? configJoinPort : configHostPort;
+    char resolvedIp[MAX_CONFIG_STRING];
+
     if (port == 0) { port = DEFAULT_PORT; }
 
     // create a receiver socket to receive datagrams
@@ -89,10 +91,9 @@ static bool ns_socket_initialize(enum NetworkType networkType) {
         // save the port to send to
         sAddr[0].sin_family = AF_INET;
         sAddr[0].sin_port = htons(port);
-        domain_resolution();
-        sAddr[0].sin_addr.s_addr = inet_addr(configJoinIp);
+        domain_resolution(resolvedIp);
+        sAddr[0].sin_addr.s_addr = inet_addr(resolvedIp);
         LOG_INFO("connecting to %s %u", configJoinIp, port);
-        save_domain();
     }
 
     // kick off first packet
