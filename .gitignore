@@ -54,6 +54,10 @@
 .idea/*
 *.code-workspace
 
+# KDevelop project info
+*.kdev4
+.kdev4/
+
 # General project-specific ignores
 doxygen/doxygen/*
 build/*
