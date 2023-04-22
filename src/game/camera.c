@@ -465,7 +465,9 @@ s32 update_8_directions_camera(struct Camera *c, Vec3f, Vec3f);
 s32 update_slide_or_0f_camera(struct Camera *c, Vec3f, Vec3f);
 s32 update_spiral_stairs_camera(struct Camera *c, Vec3f, Vec3f);
 s32 update_rom_hack_camera(struct Camera *c, Vec3f, Vec3f);
+s32 update_custom_camera(struct Camera *c, Vec3f, Vec3f);
 void mode_rom_hack_camera(struct Camera *c);
+void mode_custom_camera(struct Camera *c);
 
 typedef s32 (*CameraTransition)(struct Camera *c, Vec3f, Vec3f);
 CameraTransition sModeTransitions[] = {
@@ -489,6 +491,7 @@ CameraTransition sModeTransitions[] = {
     update_spiral_stairs_camera,
     NULL,
     update_rom_hack_camera,
+    update_custom_camera,
 };
 
 // Move these two tables to another include file?
@@ -3236,6 +3239,10 @@ void update_camera(struct Camera *c) {
                     mode_rom_hack_camera(c);
                     break;
 
+                case CAMERA_MODE_CUSTOM:
+                    mode_custom_camera(c);
+                    break;
+
 #ifdef BETTERCAMERA
                 case CAMERA_MODE_NEWCAM:
                     newcam_loop(c);
@@ -3431,7 +3438,7 @@ void init_camera(struct Camera *c) {
                 // Make sure Bowser is in a state that we'd start speaking to him in.
                 obj = find_object_with_behavior(bhvBowser);
                 if (obj != NULL && obj->oAction != 5) { break; }
-                
+
                 start_cutscene(c, CUTSCENE_ENTER_BOWSER_ARENA);
             } else if (gSecondCameraFocus != NULL) {
                 gSecondCameraFocus->oBowserUnk88 = 2;
@@ -3440,7 +3447,7 @@ void init_camera(struct Camera *c) {
             // Make sure Bowser is in a state that we'd start speaking to him in.
             obj = find_object_with_behavior(bhvBowser);
             if (obj != NULL && obj->oAction != 5) { break; }
-            
+
             start_cutscene(c, CUTSCENE_ENTER_BOWSER_ARENA);
 #endif
             break;
@@ -3448,14 +3455,14 @@ void init_camera(struct Camera *c) {
             // Make sure Bowser is in a state that we'd start speaking to him in.
             obj = find_object_with_behavior(bhvBowser);
             if (obj != NULL && obj->oAction != 5) { break; }
-            
+
             start_cutscene(c, CUTSCENE_ENTER_BOWSER_ARENA);
             break;
         case LEVEL_BOWSER_3:
             // Make sure Bowser is in a state that we'd start speaking to him in.
             obj = find_object_with_behavior(bhvBowser);
             if (obj != NULL && obj->oAction != 5) { break; }
-  
+
             start_cutscene(c, CUTSCENE_ENTER_BOWSER_ARENA);
             break;
 
@@ -12030,5 +12037,16 @@ s32 update_rom_hack_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     c->yaw = DEGREES(90) - sRomHackYaw + sRomHackOffset;
     c->nextYaw = c->yaw;
     return camYaw;
+}
+
+s32 update_custom_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
+    return c->yaw;
+}
+
+void mode_custom_camera(struct Camera *c) {
+    struct CustomCamera customCamera;
+    smlua_call_event_hooks_custom_camera_params(HOOK_CUSTOM_CAMERA, &(customCamera.pos), &(customCamera.focus));
+    vec3f_copy(c->pos, customCamera.pos);
+    vec3f_copy(c->focus, customCamera.focus);
 }
 

@@ -850,6 +850,26 @@ bool smlua_call_action_hook(enum LuaActionHookType hookType, struct MarioState* 
     return false;
 }
 
+void smlua_call_event_hooks_custom_camera_params(enum LuaHookedEventType hookType, Vec3f* pos, Vec3f* focus) {
+    lua_State* L = gLuaState;
+    if (L == NULL) { return; }
+    struct LuaHookedEvent* hook = &sHookedEvents[hookType];
+    for (int i = 0; i < hook->count; i++) {
+        // push the callback onto the stack
+        lua_rawgeti(L, LUA_REGISTRYINDEX, hook->reference[i]);
+
+        // push camera
+        smlua_push_object(L, LOT_VEC3F, pos);
+        smlua_push_object(L, LOT_VEC3F, focus);
+
+        // call the callback
+        if (0 != smlua_call_hook(L, 2, 0, 0, hook->mod[i])) {
+            LOG_LUA("Failed to call the callback: %u", hookType);
+            continue;
+        }
+    }
+}
+
 u32 smlua_get_action_interaction_type(struct MarioState* m) {
     u32 interactionType = 0;
     lua_State* L = gLuaState;

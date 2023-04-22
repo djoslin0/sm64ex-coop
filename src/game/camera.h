@@ -114,6 +114,7 @@ extern u8 gOverrideFreezeCamera;
 #define CAMERA_MODE_8_DIRECTIONS      0x0E // AKA Parallel Camera, Bowser Courses & Rainbow Ride
 #define CAMERA_MODE_FREE_ROAM         0x10
 #define CAMERA_MODE_SPIRAL_STAIRS     0x11
+#define CAMERA_MODE_CUSTOM            0x14
 #ifdef BETTERCAMERA
 #define CAMERA_MODE_NEWCAM            0x12
 #endif
@@ -663,6 +664,11 @@ struct LakituState
     /*0xBC*/ s16 unused;
 
     u32 skipCameraInterpolationTimestamp;
+};
+
+struct CustomCamera {
+    /*0x00*/ Vec3f pos;
+    /*0x0C*/ Vec3f focus;
 };
 
 // bss order hack to not affect BSS order. if possible, remove me, but it will be hard to match otherwise

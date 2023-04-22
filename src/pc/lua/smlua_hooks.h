@@ -6,6 +6,7 @@
 
 #include "smlua.h"
 #include "pc/mods/mod.h"
+#include "src/game/camera.h"
 
 // forward declare
 struct Camera;
@@ -43,6 +44,7 @@ enum LuaHookedEventType {
     HOOK_CHARACTER_SOUND,
     HOOK_BEFORE_SET_MARIO_ACTION,
     HOOK_JOINED_GAME,
+    HOOK_CUSTOM_CAMERA,
     HOOK_MAX,
 };
 
@@ -79,7 +81,8 @@ static const char* LuaHookedEventTypeName[] = {
     "HOOK_CHARACTER_SOUND",
     "HOOK_BEFORE_SET_MARIO_ACTION",
     "HOOK_JOINED_GAME",
-    "HOOK_MAX"
+    "HOOK_CUSTOM_CAMERA"
+    "HOOK_MAX",
 };
 
 enum LuaActionHookType {
@@ -118,6 +121,7 @@ void smlua_call_event_hooks_ret_bool(enum LuaHookedEventType hookType, bool* ret
 void smlua_call_event_hooks_on_chat_message(enum LuaHookedEventType hookType, struct MarioState* m, const char* message, bool* returnValue);
 bool smlua_call_event_hooks_mario_character_sound_param_ret_int(enum LuaHookedEventType hookType, struct MarioState* m, enum CharacterSound characterSound, s32* returnValue);
 void smlua_call_event_hooks_mario_action_params_ret_int(enum LuaHookedEventType hookType, struct MarioState *m, u32 action, u32* returnValue);
+void smlua_call_event_hooks_custom_camera_params(enum LuaHookedEventType hookType, Vec3f *pos, Vec3f *focus);
 
 enum BehaviorId smlua_get_original_behavior_id(const BehaviorScript* behavior);
 const BehaviorScript* smlua_override_behavior(const BehaviorScript* behavior);

@@ -2101,6 +2101,12 @@ static struct LuaObjectField sstruct802A1230Fields[LUA_STRUCT802_A1230_FIELD_COU
     { "unk02", LVT_S16, offsetof(struct struct802A1230, unk02), false, LOT_NONE },
 };
 
+#define LUA_CUSTOM_CAMERA_FIELD_COUNT 2
+static struct LuaObjectField sCustomCameraFields[LUA_CUSTOM_CAMERA_FIELD_COUNT] = {
+    { "pos",   LVT_COBJECT, 0x00, true, LOT_VEC3F },
+    { "focus", LVT_COBJECT, 0x0C, true, LOT_VEC3F },
+};
+
 struct LuaObjectTable sLuaObjectAutogenTable[LOT_AUTOGEN_MAX - LOT_AUTOGEN_MIN] = {
     { LOT_ANIMINFO,                  sAnimInfoFields,                  LUA_ANIM_INFO_FIELD_COUNT                    },
     { LOT_ANIMATION,                 sAnimationFields,                 LUA_ANIMATION_FIELD_COUNT                    },
@@ -2171,6 +2177,7 @@ struct LuaObjectTable sLuaObjectAutogenTable[LOT_AUTOGEN_MAX - LOT_AUTOGEN_MIN] 
     { LOT_WAYPOINT,                  sWaypointFields,                  LUA_WAYPOINT_FIELD_COUNT                     },
     { LOT_WHIRLPOOL,                 sWhirlpoolFields,                 LUA_WHIRLPOOL_FIELD_COUNT                    },
     { LOT_STRUCT802A1230,            sstruct802A1230Fields,            LUA_STRUCT802_A1230_FIELD_COUNT              },
+    { LOT_CUSTOMCAMERA,              sCustomCameraFields,              LUA_CUSTOM_CAMERA_FIELD_COUNT                },
 };
 
 struct LuaObjectField* smlua_get_object_field_autogen(u16 lot, const char* key) {

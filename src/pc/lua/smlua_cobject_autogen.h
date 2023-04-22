@@ -74,6 +74,7 @@ enum LuaObjectAutogenType {
     LOT_WAYPOINT,
     LOT_WHIRLPOOL,
     LOT_STRUCT802A1230,
+    LOT_CUSTOMCAMERA,
     LOT_AUTOGEN_MAX,
 };
 
