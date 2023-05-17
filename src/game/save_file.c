@@ -657,8 +657,11 @@ s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex) {
 /**
  * Return TRUE if the cannon is unlocked in the current course.
  */
-s32 save_file_is_cannon_unlocked(void) {
-    return (gSaveBuffer.files[gCurrSaveFileNum - 1][gSaveFileUsingBackupSlot].courseStars[gCurrCourseNum] & 0x80) != 0;
+s32 save_file_is_cannon_unlocked(s32 fileIndex, s32 courseIndex) {
+    if (courseIndex == -1) {
+        return (gSaveBuffer.files[fileIndex][gSaveFileUsingBackupSlot].courseStars[gCurrCourseNum] & 0x80) != 0;
+    }
+    return (gSaveBuffer.files[fileIndex][gSaveFileUsingBackupSlot].courseStars[courseIndex] & 0x80) != 0;
 }
 
 /**
