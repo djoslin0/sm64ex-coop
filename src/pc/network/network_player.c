@@ -404,7 +404,7 @@ void network_player_update_course_level(struct NetworkPlayer* np, s16 courseNum,
 
     if (np->currCourseNum != courseNum && np->localIndex != 0 && !inCredits) {
         bool matchingLocal = (np->currCourseNum == gNetworkPlayerLocal->currCourseNum) && (np->currActNum == gNetworkPlayerLocal->currActNum);
-        bool matchingLocalEnter = (courseNum == gNetworkPlayerLocal->currCourseNum) && (actNum == gNetworkPlayerLocal->currActNum);
+        bool matchingLocalEnter = (courseNum == gNetworkPlayerLocal->currCourseNum && (actNum == gNetworkPlayerLocal->currActNum || COURSE_IS_MAIN_COURSE(courseNum)));
 
         if (matchingLocal && gNetworkPlayerLocal->currCourseNum != 0) {
             construct_player_popup(np, DLANG(NOTIF, LEFT_THIS_LEVEL), NULL);
