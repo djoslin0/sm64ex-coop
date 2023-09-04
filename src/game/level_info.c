@@ -199,16 +199,22 @@ const char *get_level_name_ascii(s16 courseNum, s16 levelNum, s16 areaIndex, s16
                     default: snprintf(output, 256, "Castle Purgatory"); break;
                 }
             } break;
+            // case LEVEL_ENDING: snprintf(output, 256, "End Cake Picture"); break;
             case LEVEL_CASTLE_GROUNDS: snprintf(output, 256, "Castle Grounds"); break;
             case LEVEL_CASTLE_COURTYARD: snprintf(output, 256, "Castle Courtyard"); break;
-            default: snprintf(output, 256, "Peach's Castle");
+            default: snprintf(output, 256, "Unknown");
         }
     }
     
-    // Default
-    else if (!hasCustomName) {
-        snprintf(output, 256, "Peach's Castle");
+     // End Cake Picture
+    else if (levelNum == 25) {
+        snprintf(output, 256, "End Cake Picture");
     }
+    // Default
+    else if (!hasCustomName && levelNum != 25) {
+        snprintf(output, 256, "Unknown");
+    }
+   
 
     // Capitalize or decapitalize text
     if (charCase == -1) {
