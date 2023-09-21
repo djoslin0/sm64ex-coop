@@ -54,6 +54,13 @@ void djui_inputbox_select_all(struct DjuiInputbox* inputbox) {
     inputbox->selection[0] = djui_unicode_len(inputbox->buffer);
 }
 
+void djui_inputbox_move_cursor_to_end(struct DjuiInputbox* inputbox) {
+    inputbox->selection[1] = djui_unicode_len(inputbox->buffer);
+    inputbox->selection[0] = djui_unicode_len(inputbox->buffer);
+    sCursorBlink = 0;
+    djui_inputbox_on_change(inputbox);
+}
+
 void djui_inputbox_hook_enter_press(struct DjuiInputbox* inputbox, void (*on_enter_press)(struct DjuiInputbox*)) {
     inputbox->on_enter_press = on_enter_press;
 }
@@ -302,7 +309,7 @@ void djui_inputbox_on_focus_end(UNUSED struct DjuiBase* base) {
     wm_api->stop_text_input();
 }
 
-static void djui_inputbox_on_text_input(struct DjuiBase *base, char* text) {
+void djui_inputbox_on_text_input(struct DjuiBase *base, char* text) {
     struct DjuiInputbox *inputbox = (struct DjuiInputbox *) base;
     char* msg = inputbox->buffer;
     int msgLen = strlen(msg);

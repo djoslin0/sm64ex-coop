@@ -124,7 +124,12 @@ bool exec_chat_command(char* command) {
         return true;
     }
 
-    if (str_starts_with("/kick ", command)) {
+    if (str_starts_with("/kick", command)) {
+        if (strcmp("/kick", command) == 0) {
+            djui_chat_message_create(DLANG(CHAT, PLAYER_NOT_FOUND));
+            return true;
+        }
+
         if (gNetworkType != NT_SERVER && !gIsModerator) {
             djui_chat_message_create(DLANG(CHAT, NO_PERMS));
             return true;
@@ -147,7 +152,12 @@ bool exec_chat_command(char* command) {
         return true;
     }
 
-    if (str_starts_with("/ban ", command)) {
+    if (str_starts_with("/ban", command)) {
+        if (strcmp("/ban", command) == 0) {
+            djui_chat_message_create(DLANG(CHAT, PLAYER_NOT_FOUND));
+            return true;
+        }
+
         if (gNetworkType != NT_SERVER && !gIsModerator) {
             djui_chat_message_create(DLANG(CHAT, NO_PERMS));
             return true;
@@ -170,7 +180,12 @@ bool exec_chat_command(char* command) {
         return true;
     }
 
-    if (str_starts_with("/permban ", command)) {
+    if (str_starts_with("/permban", command)) {
+        if (strcmp("/permban", command) == 0) {
+            djui_chat_message_create(DLANG(CHAT, PLAYER_NOT_FOUND));
+            return true;
+        }
+
         if (gNetworkType != NT_SERVER && !gIsModerator) {
             djui_chat_message_create(DLANG(CHAT, NO_PERMS));
             return true;
@@ -193,7 +208,12 @@ bool exec_chat_command(char* command) {
         return true;
     }
 
-    if (str_starts_with("/moderator ", command)) {
+    if (str_starts_with("/moderator", command)) {
+        if (strcmp("/moderator", command) == 0) {
+            djui_chat_message_create(DLANG(CHAT, PLAYER_NOT_FOUND));
+            return true;
+        }
+
         if (gNetworkType != NT_SERVER) {
             djui_chat_message_create(DLANG(CHAT, SERVER_ONLY));
             return true;
