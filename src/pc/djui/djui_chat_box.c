@@ -425,9 +425,9 @@ static bool djui_chat_box_input_on_key_down(struct DjuiBase* base, int scancode)
                 //[IMPORTANT INFO/TODO] => SOMETHING IS WRONG HERE, IT WILL CRASH UPON TAB-COMPLETION OF PLAYER NAMES. IT KINDA WORKED WHILE AGO BUT IT WAS KINDA BUGGY, BUT ME TRYING TO FIX IT JUST COMPLETLY BROKE IT. NOW ITS NO LONGER WORKING AT ALL BUT CRASHING THE GAME. THATS WHY I PUT // BEFORE THOSE LINES FOR NOW TO AT LEAST PREVENT THE CRASH UNTIL SOMEBODY WILL FIX IT...
                 
                 /* {{{CRASH-PREVENTING WORKAROUND CODE}}} */ 
-                printf("\n{PLAYER-TAB-ERROR} [CLASS]=djui_chat_box.c [METHOD]=djui_chat_box_input_on_key_down [LINE]=425 {PLAYER-TAB-ERROR}");
-                djui_inputbox_set_text(gDjuiChatBox->chatInput, "{PLAYER-TAB-ERROR} [CLASS]=djui_chat_box.c [METHOD]=djui_chat_box_input_on_key_down [LINE]=425 {PLAYER-TAB-ERROR}");
-                djui_inputbox_move_cursor_to_end(gDjuiChatBox->chatInput);
+                printf("\n{PLAYER-TAB-ERROR}  [CLASS]=djui_chat_box.c [METHOD]=djui_chat_box_input_on_key_down [LINE]=425  {PLAYER-TAB-ERROR}");
+					//djui_inputbox_set_text(gDjuiChatBox->chatInput, "{PLAYER-TAB-ERROR} [CLASS]=djui_chat_box.c [METHOD]=djui_chat_box_input_on_key_down [LINE]=425 {PLAYER-TAB-ERROR}");
+					//djui_inputbox_move_cursor_to_end(gDjuiChatBox->chatInput);
                 
                 /* {{{CRASH-CAUSING BUGGY CODE}}} */
                     /*if (complete_playername(get_current_word_info(gDjuiChatBox->chatInput->buffer, gDjuiChatBox->chatInput->selection[0]).word)) {
