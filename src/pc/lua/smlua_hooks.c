@@ -1311,7 +1311,7 @@ struct LuaHookedChatCommand {
     struct Mod* mod;
 };
 
-#define MAX_HOOKED_CHAT_COMMANDS 8192
+#define MAX_HOOKED_CHAT_COMMANDS 512
 
 static struct LuaHookedChatCommand sHookedChatCommands[MAX_HOOKED_CHAT_COMMANDS] = { 0 };
 static int sHookedChatCommandsCount = 0;

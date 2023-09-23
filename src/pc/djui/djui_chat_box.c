@@ -10,7 +10,7 @@ struct DjuiChatBox* gDjuiChatBox = NULL;
 bool gDjuiChatBoxFocus = false;
 static bool sDjuiChatBoxClearText = false;
 
-#define MAX_HISTORY_SIZE 1000
+#define MAX_HISTORY_SIZE 256
 #define MAX_MSG_LENGTH 201
 
 typedef struct {
@@ -31,12 +31,12 @@ static char sTabCompletionOriginalText[MAX_MSG_LENGTH];
 
 //void resetTabCompletionCommands(void) {
 //    iTabCompletionIndex = -1;
-//    strncpy(sTabCompletionOriginalText, "", MAX_MSG_LENGTH - 1);
+//    snprintf(sTabCompletionOriginalText, MAX_MSG_LENGTH, "%s", "");
 //}
 
 //void resetTabCompletionPlayernames(void) {
 //    iTabCompletionPlayernamesIndex = -1;
-//    strncpy(sTabCompletionPlayernamesOriginalText, "", MAX_MSG_LENGTH - 1);
+//    snprintf(sTabCompletionPlayernamesOriginalText, MAX_MSG_LENGTH, "%s", "");
 //}
 
 //void resetTabCompletionAll(void) {
@@ -46,7 +46,7 @@ static char sTabCompletionOriginalText[MAX_MSG_LENGTH];
 
 void resetTabCompletion(void) {
     iTabCompletionIndex = -1;
-    strncpy(sTabCompletionOriginalText, "", MAX_MSG_LENGTH - 1);
+    snprintf(sTabCompletionOriginalText, MAX_MSG_LENGTH, "%s", "");
 }
 
 void sentHistoryInit(ArrayList *arrayList) {
