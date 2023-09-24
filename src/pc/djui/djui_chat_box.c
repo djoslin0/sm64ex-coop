@@ -23,30 +23,22 @@ typedef struct {
 
 ArrayList sentHistory;
 
-static int iTabCompletionIndex = -1;
-static char sTabCompletionOriginalText[MAX_MSG_LENGTH];
+static int iCommandsTabCompletionIndex = -1;
+static char sCommandsTabCompletionOriginalText[MAX_MSG_LENGTH];
+static int iPlayersTabCompletionIndex = -1;
+static char sPlayersTabCompletionOriginalText[MAX_MSG_LENGTH];
 
-//static int iTabCompletionPlayernamesIndex = -1;
-//static char sTabCompletionPlayernamesOriginalText[MAX_MSG_LENGTH];
-
-//void resetTabCompletionCommands(void) {
-//    iTabCompletionIndex = -1;
-//    snprintf(sTabCompletionOriginalText, MAX_MSG_LENGTH, "%s", "");
-//}
-
-//void resetTabCompletionPlayernames(void) {
-//    iTabCompletionPlayernamesIndex = -1;
-//    snprintf(sTabCompletionPlayernamesOriginalText, MAX_MSG_LENGTH, "%s", "");
-//}
-
-//void resetTabCompletionAll(void) {
-//    resetTabCompletionCommands();
-//    resetTabCompletionPlayernames();
-//}
-
-void resetTabCompletion(void) {
-    iTabCompletionIndex = -1;
-    snprintf(sTabCompletionOriginalText, MAX_MSG_LENGTH, "%s", "");
+void resetTabCompletionCommands(void) {
+    iCommandsTabCompletionIndex = -1;
+    snprintf(sCommandsTabCompletionOriginalText, MAX_MSG_LENGTH, "%s", "");
+}
+void resetTabCompletionPlayers(void) {
+    iPlayersTabCompletionIndex = -1;
+    snprintf(sPlayersTabCompletionOriginalText, MAX_MSG_LENGTH, "%s", "");
+}
+void resetTabCompletionAll(void) {
+    resetTabCompletionCommands();
+    resetTabCompletionPlayers();
 }
 
 void sentHistoryInit(ArrayList *arrayList) {
@@ -189,12 +181,12 @@ static bool complete_subcommand(const char* mainCommand, const char* subCommandP
 
     bool completionSuccess = false;
     if (foundSubCommandsCount > 0) {
-        iTabCompletionIndex = (iTabCompletionIndex + 1) % foundSubCommandsCount;
+        iCommandsTabCompletionIndex = (iCommandsTabCompletionIndex + 1) % foundSubCommandsCount;
         int currentIndex = 0;
 
         for (int i = 0; subcommands[i] != NULL; i++) {
             if (strncmp(subcommands[i], subCommandPrefix, strlen(subCommandPrefix)) == 0) {
-                if (currentIndex == iTabCompletionIndex) {
+                if (currentIndex == iCommandsTabCompletionIndex) {
                     char completion[MAX_MSG_LENGTH];
                     snprintf(completion, MAX_MSG_LENGTH, "/%s %s", mainCommand, subcommands[i]);
                     djui_inputbox_set_text(gDjuiChatBox->chatInput, completion);
@@ -244,38 +236,50 @@ CurrentWordInfo get_current_word_info(char* buffer, int position) {
     return info;
 }
 
+void djui_inputbox_replace_current_word(struct DjuiInputbox* inputbox, char* text) {
+    if (!inputbox || !text) { return; }
 
-/*static bool complete_playername(const char* namePrefix) {
-    char** players = smlua_get_chat_player_list();
-    if (!players || !players[0]) {
-        if (players) {
-            free(players);
+    int currentWordStart = inputbox->selection[0];
+    int currentWordEnd = inputbox->selection[0];
+    
+    while (currentWordStart > 0 && inputbox->buffer[currentWordStart - 1] != ' ') { currentWordStart--; }
+    while (inputbox->buffer[currentWordEnd] != '\0' && inputbox->buffer[currentWordEnd] != ' ') { currentWordEnd++; }
+
+    char newBuffer[MAX_MSG_LENGTH];
+    memset(newBuffer, 0, MAX_MSG_LENGTH);
+    strncpy(newBuffer, inputbox->buffer, currentWordStart);
+    strcat(newBuffer, text);
+    strcat(newBuffer, &inputbox->buffer[currentWordEnd]);
+
+    djui_inputbox_set_text(inputbox, newBuffer);
+    djui_inputbox_move_cursor_to_position(inputbox, currentWordStart + strlen(text));
+}
+
+static bool complete_player_name(const char* namePrefix) {
+    char** playerNames = smlua_get_chat_player_list();
+    if (!playerNames || !playerNames[0]) {
+        if (playerNames) {
+            free(playerNames);
         }
         return false;
     }
 
-    int foundPlayerCount = 0;
-    for (int i = 0; players[i] != NULL; i++) {
-        if (strncmp(players[i], namePrefix, strlen(namePrefix)) == 0) {
-            foundPlayerCount++;
+    int foundNamesCount = 0;
+    for (int i = 0; playerNames[i] != NULL; i++) {
+        if (strncmp(playerNames[i], namePrefix, strlen(namePrefix)) == 0) {
+            foundNamesCount++;
         }
     }
 
     bool completionSuccess = false;
-    if (foundPlayerCount > 0) {
-        iTabCompletionPlayernamesIndex = (iTabCompletionPlayernamesIndex + 1) % foundPlayerCount;
+    if (foundNamesCount > 0) {
+        iPlayersTabCompletionIndex = (iPlayersTabCompletionIndex + 1) % foundNamesCount;
         int currentIndex = 0;
 
-        for (int i = 0; players[i] != NULL; i++) {
-            if (strncmp(players[i], namePrefix, strlen(namePrefix)) == 0) {
-                if (currentIndex == iTabCompletionPlayernamesIndex) {
-                    char completion[MAX_MSG_LENGTH];
-                    char preCompletion[MAX_MSG_LENGTH];
-                    strncpy(preCompletion, gDjuiChatBox->chatInput->buffer, namePrefix - gDjuiChatBox->chatInput->buffer);
-                    preCompletion[namePrefix - gDjuiChatBox->chatInput->buffer] = '\0';
-                    snprintf(completion, MAX_MSG_LENGTH, "%s%s", preCompletion, players[i]);
-                    strcat(completion, namePrefix + strlen(namePrefix));
-                    djui_inputbox_set_text(gDjuiChatBox->chatInput, completion);
+        for (int i = 0; playerNames[i] != NULL; i++) {
+            if (strncmp(playerNames[i], namePrefix, strlen(namePrefix)) == 0) {
+                if (currentIndex == iPlayersTabCompletionIndex) {
+                    djui_inputbox_replace_current_word(gDjuiChatBox->chatInput, playerNames[i]);
                     completionSuccess = true;
                     break;
                 }
@@ -284,13 +288,14 @@ CurrentWordInfo get_current_word_info(char* buffer, int position) {
         }
     }
 
-    for (int i = 0; players[i] != NULL; i++) {
-        free(players[i]);
+    for (int i = 0; playerNames[i] != NULL; i++) {
+        free(playerNames[i]);
     }
-    free(players);
-    
+    free(playerNames);
+
     return completionSuccess;
-}*/
+}
+
 
 static bool djui_chat_box_input_on_key_down(struct DjuiBase* base, int scancode) {
     sentHistoryInit(&sentHistory);
@@ -311,14 +316,14 @@ static bool djui_chat_box_input_on_key_down(struct DjuiBase* base, int scancode)
             sentHistoryUpdateCurrentMessage(&sentHistory, gDjuiChatBox->chatInput->buffer);
             sentHistoryNavigate(&sentHistory, true);
             if (strcmp(previousText, gDjuiChatBox->chatInput->buffer) != 0) {
-                resetTabCompletion();
+                resetTabCompletionAll();
             }
             return true;
         case SCANCODE_DOWN:
             sentHistoryUpdateCurrentMessage(&sentHistory, gDjuiChatBox->chatInput->buffer);
             sentHistoryNavigate(&sentHistory, false);
             if (strcmp(previousText, gDjuiChatBox->chatInput->buffer) != 0) {
-                resetTabCompletion();
+                resetTabCompletionAll();
             }
             return true;
         case SCANCODE_PAGE_UP:
@@ -340,23 +345,23 @@ static bool djui_chat_box_input_on_key_down(struct DjuiBase* base, int scancode)
         case SCANCODE_TAB:
             bool alreadyTabCompleted = false;
             if (gDjuiChatBox->chatInput->buffer[0] == '/') {
-                char* spacePosition = strrchr(sTabCompletionOriginalText, ' ');
+                char* spacePosition = strrchr(sCommandsTabCompletionOriginalText, ' ');
                 if (spacePosition != NULL) {
-                    char* mainCommand = get_main_command_from_input(sTabCompletionOriginalText);
+                    char* mainCommand = get_main_command_from_input(sCommandsTabCompletionOriginalText);
                     if (mainCommand) {
                         if (!complete_subcommand(mainCommand + 1, spacePosition + 1)) {
-                            resetTabCompletion();
+                            resetTabCompletionAll();
                         } else {
                             alreadyTabCompleted = true;
                         }
                         free(mainCommand);
                     }
                 } else {
-                    if (iTabCompletionIndex == -1) {
-                        strncpy(sTabCompletionOriginalText, gDjuiChatBox->chatInput->buffer, MAX_MSG_LENGTH - 1);
+                    if (iCommandsTabCompletionIndex == -1) {
+                        strncpy(sCommandsTabCompletionOriginalText, gDjuiChatBox->chatInput->buffer, MAX_MSG_LENGTH - 1);
                     }
                     
-                    char* buffer_without_slash = sTabCompletionOriginalText + 1;
+                    char* buffer_without_slash = sCommandsTabCompletionOriginalText + 1;
                     char** commands = smlua_get_chat_maincommands_list();
                     int foundCommandsCount = 0;
                     
@@ -367,12 +372,12 @@ static bool djui_chat_box_input_on_key_down(struct DjuiBase* base, int scancode)
                     }
                     
                     if (foundCommandsCount > 0) {
-                        iTabCompletionIndex = (iTabCompletionIndex + 1) % foundCommandsCount;
+                        iCommandsTabCompletionIndex = (iCommandsTabCompletionIndex + 1) % foundCommandsCount;
                         int currentIndex = 0;
                         
                         for (int i = 0; commands[i] != NULL; i++) {
                             if (strncmp(commands[i], buffer_without_slash, strlen(buffer_without_slash)) == 0) {
-                                if (currentIndex == iTabCompletionIndex) {
+                                if (currentIndex == iCommandsTabCompletionIndex) {
                                     char completion[MAX_MSG_LENGTH];
                                     snprintf(completion, MAX_MSG_LENGTH, "/%s", commands[i]);
                                     djui_inputbox_set_text(gDjuiChatBox->chatInput, completion);
@@ -383,12 +388,12 @@ static bool djui_chat_box_input_on_key_down(struct DjuiBase* base, int scancode)
                             }
                         }
                     } else {
-                        char* spacePositionB = strrchr(sTabCompletionOriginalText, ' ');
+                        char* spacePositionB = strrchr(sCommandsTabCompletionOriginalText, ' ');
                         if (spacePositionB != NULL) {
-                            char* mainCommandB = get_main_command_from_input(sTabCompletionOriginalText);
+                            char* mainCommandB = get_main_command_from_input(sCommandsTabCompletionOriginalText);
                             if (mainCommandB) {
                                 if (!complete_subcommand(mainCommandB + 1, spacePositionB + 1)) {
-                                    resetTabCompletion();
+                                    resetTabCompletionAll();
                                 } else {
                                     alreadyTabCompleted = true;
                                 }
@@ -421,36 +426,35 @@ static bool djui_chat_box_input_on_key_down(struct DjuiBase* base, int scancode)
                     }
                 }
             }
-            if (!alreadyTabCompleted) {
-                //[IMPORTANT INFO/TODO] => SOMETHING IS WRONG HERE, IT WILL CRASH UPON TAB-COMPLETION OF PLAYER NAMES. IT KINDA WORKED WHILE AGO BUT IT WAS KINDA BUGGY, BUT ME TRYING TO FIX IT JUST COMPLETLY BROKE IT. NOW ITS NO LONGER WORKING AT ALL BUT CRASHING THE GAME. THATS WHY I PUT // BEFORE THOSE LINES FOR NOW TO AT LEAST PREVENT THE CRASH UNTIL SOMEBODY WILL FIX IT...
-                
-                /* {{{CRASH-PREVENTING WORKAROUND CODE}}} */ 
-                printf("\n{PLAYER-TAB-ERROR}  [CLASS]=djui_chat_box.c [METHOD]=djui_chat_box_input_on_key_down [LINE]=425  {PLAYER-TAB-ERROR}");
-					//djui_inputbox_set_text(gDjuiChatBox->chatInput, "{PLAYER-TAB-ERROR} [CLASS]=djui_chat_box.c [METHOD]=djui_chat_box_input_on_key_down [LINE]=425 {PLAYER-TAB-ERROR}");
-					//djui_inputbox_move_cursor_to_end(gDjuiChatBox->chatInput);
-                
-                /* {{{CRASH-CAUSING BUGGY CODE}}} */
-                    /*if (complete_playername(get_current_word_info(gDjuiChatBox->chatInput->buffer, gDjuiChatBox->chatInput->selection[0]).word)) {
-                        alreadyTabCompleted = true;
-                    } else {
-                        resetTabCompletionAll();
-                    }*/
+   if (!alreadyTabCompleted) {
+        CurrentWordInfo wordInfo = get_current_word_info(gDjuiChatBox->chatInput->buffer, gDjuiChatBox->chatInput->selection[0]);
+        if (wordInfo.index != -1) {
+            if (iPlayersTabCompletionIndex == -1) {
+                strncpy(sPlayersTabCompletionOriginalText, wordInfo.word, MAX_MSG_LENGTH - 1);
             }
+            if (!complete_player_name(sPlayersTabCompletionOriginalText)) {
+                resetTabCompletionPlayers();
+            } else {
+                alreadyTabCompleted = true;
+            }
+        }
+    }
+    return true;
             return true;
         case SCANCODE_ENTER:
-            resetTabCompletion();
+            resetTabCompletionAll();
             sentHistoryResetNavigation(&sentHistory);
             djui_chat_box_input_enter(gDjuiChatBox->chatInput);
             return true;
         case SCANCODE_ESCAPE:
-            resetTabCompletion();
+            resetTabCompletionAll();
             sentHistoryResetNavigation(&sentHistory);
             djui_chat_box_input_escape(gDjuiChatBox->chatInput);
             return true;
         default:
             bool returnValueOnOtherKeyDown = djui_inputbox_on_key_down(base, scancode);
             if (strcmp(previousText, gDjuiChatBox->chatInput->buffer) != 0) {
-                resetTabCompletion();
+                resetTabCompletionAll();
             }
             return returnValueOnOtherKeyDown;
     }
@@ -461,7 +465,7 @@ static void djui_chat_box_input_on_text_input(struct DjuiBase *base, char* text)
     strncpy(previousText, gDjuiChatBox->chatInput->buffer, MAX_MSG_LENGTH - 1);
     djui_inputbox_on_text_input(base, text);
     if (strcmp(previousText, gDjuiChatBox->chatInput->buffer) != 0) {
-        resetTabCompletion();
+        resetTabCompletionAll();
     }
 }
 
