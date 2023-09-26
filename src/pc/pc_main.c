@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "sm64.h"
 
@@ -298,6 +300,25 @@ void main_func(void) {
     configfile_load();
     if (!djui_language_init(configLanguage)) {
         snprintf(configLanguage, MAX_CONFIG_STRING, "%s", "");
+    }
+
+    if (gCLIOpts.RandomPlayerName == 1) {
+        struct timespec ts;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        unsigned int seed = (unsigned int)(ts.tv_nsec ^ ts.tv_sec ^ getpid());
+        srand(seed);
+
+        char randomDigits[9];
+        for (int i = 0; i < 8; i++) {
+            randomDigits[i] = '0' + (rand() % 10);
+        }
+        randomDigits[8] = '\0';
+
+        snprintf(configPlayerName, MAX_PLAYER_STRING, "Player%s", randomDigits);
+        printf("\nRandom Playername (Start-Parameter): %s\n\n", configPlayerName);
+    } else if (gCLIOpts.PlayerName[0] != '\0') {
+        snprintf(configPlayerName, MAX_PLAYER_STRING, "%s", gCLIOpts.PlayerName);
+        printf("\nCustom Playername (Start-Parameter): %s\n\n", configPlayerName);
     }
 
     dynos_pack_init();
