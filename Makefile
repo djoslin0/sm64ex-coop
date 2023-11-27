@@ -625,7 +625,11 @@ ifeq ($(DISCORD_SDK), 1)
     # HACKY! Instead of figuring out all of the dynamic library linking madness...
     # I copied the library and gave it two names.
     # This really shouldn't be required, but I got tired of trying to do it the "right way"
-    DISCORD_SDK_LIBS := lib/discordsdk/discord_game_sdk.dylib lib/discordsdk/libdiscord_game_sdk.dylib
+    ifeq ($(TARGET_ARCH), aarch64-apple-darwin)
+      DISCORD_SDK_LIBS := lib/discordsdk/aarch64/discord_game_sdk.dylib lib/discordsdk/aarch64/libdiscord_game_sdk.dylib
+    else
+      DISCORD_SDK_LIBS := lib/discordsdk/discord_game_sdk.dylib lib/discordsdk/libdiscord_game_sdk.dylib
+    endif
   else
     DISCORD_SDK_LIBS := lib/discordsdk/libdiscord_game_sdk.so
   endif
