@@ -409,8 +409,6 @@ $(eval $(call validate-option,COMPARE,0 1))
 
 ifeq ($(OSX_BUILD),0)
 	USE_APP := 0
-else ifeq ($(shell uname -m),arm64)
-  DISCORD_SDK := 0
 endif
 
 TARGET_STRING := sm64.$(VERSION).$(GRUCODE)
@@ -625,7 +623,7 @@ ifeq ($(DISCORD_SDK), 1)
     # HACKY! Instead of figuring out all of the dynamic library linking madness...
     # I copied the library and gave it two names.
     # This really shouldn't be required, but I got tired of trying to do it the "right way"
-    ifeq ($(TARGET_ARCH), aarch64-apple-darwin)
+    ifeq ($(shell uname -m),arm64)
       DISCORD_SDK_LIBS := lib/discordsdk/aarch64/discord_game_sdk.dylib lib/discordsdk/aarch64/libdiscord_game_sdk.dylib
     else
       DISCORD_SDK_LIBS := lib/discordsdk/discord_game_sdk.dylib lib/discordsdk/libdiscord_game_sdk.dylib
