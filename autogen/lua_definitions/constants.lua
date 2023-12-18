@@ -5369,12 +5369,6 @@ MARIO_ANIM_FORWARD_SPINNING_FLIP = 207
 --- @type MarioAnimID
 MARIO_ANIM_TRIPLE_JUMP_FLY = 208
 
---- @type MarioAnimID
-WALUIGI_ANIM_WALKING = 209
-
---- @type MarioAnimID
-WALUIGI_ANIM_RUNNING = 210
-
 --- @class MarioCapGSCId
 
 --- @type MarioCapGSCId
@@ -5451,12 +5445,6 @@ MARIO_HAND_HOLDING_WING_CAP = 4
 
 --- @type MarioHandGSCId
 MARIO_HAND_RIGHT_OPEN = 5
-
---- @type integer
-MAX_KEYS = 512
-
---- @type integer
-MAX_KEY_VALUE_LENGTH = 64
 
 --- @type integer
 PACKET_LENGTH = 3000
@@ -12319,7 +12307,7 @@ MAX_LOCAL_VERSION_LENGTH = 36
 MAX_VERSION_LENGTH = 32
 
 --- @type integer
-MINOR_VERSION_NUMBER = 0
+MINOR_VERSION_NUMBER = 1
 
 --- @type integer
 PATCH_VERSION_NUMBER = 0

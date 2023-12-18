@@ -278,9 +278,3 @@ end
 function level_script_parse(levelNum, func)
     -- ...
 end
-
---- @param readFunc (fun(obj:Object):nil)? Called after the exclamation box spawns an object. Use this function to read the contents of the object that spawned.
---- @param writeFunc (fun(box:Object):Object)? Called when the exclamation box is about to spawn an object. Use this function to spawn a different object, and return the object for the read function to use.
-function hook_exclamation_box(readFunc, writeFunc)
-    
-end

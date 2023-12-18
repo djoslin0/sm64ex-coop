@@ -8475,28 +8475,10 @@
 <br />
 
 ---
-# functions from mod_storage.c.h
+# functions from mod_storage.h
 
 <br />
 
-
-## [mod_storage_clear](#mod_storage_clear)
-
-### Lua Example
-`local booleanValue = mod_storage_clear()`
-
-### Parameters
-- None
-
-### Returns
-- `boolean`
-
-### C Prototype
-`bool mod_storage_clear(void);`
-
-[:arrow_up_small:](#)
-
-<br />
 
 ## [mod_storage_load](#mod_storage_load)
 
@@ -8513,46 +8495,6 @@
 
 ### C Prototype
 `const char *mod_storage_load(const char *key);`
-
-[:arrow_up_small:](#)
-
-<br />
-
-## [mod_storage_load_bool](#mod_storage_load_bool)
-
-### Lua Example
-`local booleanValue = mod_storage_load_bool(key)`
-
-### Parameters
-| Field | Type |
-| ----- | ---- |
-| key | `string` |
-
-### Returns
-- `boolean`
-
-### C Prototype
-`bool mod_storage_load_bool(const char *key);`
-
-[:arrow_up_small:](#)
-
-<br />
-
-## [mod_storage_load_number](#mod_storage_load_number)
-
-### Lua Example
-`local numberValue = mod_storage_load_number(key)`
-
-### Parameters
-| Field | Type |
-| ----- | ---- |
-| key | `string` |
-
-### Returns
-- `number`
-
-### C Prototype
-`double mod_storage_load_number(const char *key);`
 
 [:arrow_up_small:](#)
 
@@ -8579,43 +8521,177 @@
 
 <br />
 
-## [mod_storage_save_bool](#mod_storage_save_bool)
+---
+# functions from network_player.h
+
+<br />
+
+
+## [get_network_player_from_area](#get_network_player_from_area)
 
 ### Lua Example
-`local booleanValue = mod_storage_save_bool(key, value)`
+`local NetworkPlayerValue = get_network_player_from_area(courseNum, actNum, levelNum, areaIndex)`
 
 ### Parameters
 | Field | Type |
 | ----- | ---- |
-| key | `string` |
-| value | `boolean` |
+| courseNum | `integer` |
+| actNum | `integer` |
+| levelNum | `integer` |
+| areaIndex | `integer` |
 
 ### Returns
-- `boolean`
+[NetworkPlayer](structs.md#NetworkPlayer)
 
 ### C Prototype
-`bool mod_storage_save_bool(const char *key, bool value);`
+`struct NetworkPlayer* get_network_player_from_area(s16 courseNum, s16 actNum, s16 levelNum, s16 areaIndex);`
 
 [:arrow_up_small:](#)
 
 <br />
 
-## [mod_storage_save_number](#mod_storage_save_number)
+## [get_network_player_from_level](#get_network_player_from_level)
 
 ### Lua Example
-`local booleanValue = mod_storage_save_number(key, value)`
+`local NetworkPlayerValue = get_network_player_from_level(courseNum, actNum, levelNum)`
 
 ### Parameters
 | Field | Type |
 | ----- | ---- |
-| key | `string` |
-| value | `number` |
+| courseNum | `integer` |
+| actNum | `integer` |
+| levelNum | `integer` |
 
 ### Returns
-- `boolean`
+[NetworkPlayer](structs.md#NetworkPlayer)
 
 ### C Prototype
-`bool mod_storage_save_number(const char *key, double value);`
+`struct NetworkPlayer* get_network_player_from_level(s16 courseNum, s16 actNum, s16 levelNum);`
+
+[:arrow_up_small:](#)
+
+<br />
+
+## [get_network_player_smallest_global](#get_network_player_smallest_global)
+
+### Lua Example
+`local NetworkPlayerValue = get_network_player_smallest_global()`
+
+### Parameters
+- None
+
+### Returns
+[NetworkPlayer](structs.md#NetworkPlayer)
+
+### C Prototype
+`struct NetworkPlayer* get_network_player_smallest_global(void);`
+
+[:arrow_up_small:](#)
+
+<br />
+
+## [network_player_color_to_palette](#network_player_color_to_palette)
+
+### Lua Example
+`network_player_color_to_palette(np, part, color)`
+
+### Parameters
+| Field | Type |
+| ----- | ---- |
+| np | [NetworkPlayer](structs.md#NetworkPlayer) |
+| part | [enum PlayerParts](constants.md#enum-PlayerParts) |
+| color | `Color` |
+
+### Returns
+- None
+
+### C Prototype
+`void network_player_color_to_palette(struct NetworkPlayer *np, enum PlayerParts part, Color color);`
+
+[:arrow_up_small:](#)
+
+<br />
+
+## [network_player_connected_count](#network_player_connected_count)
+
+### Lua Example
+`local integerValue = network_player_connected_count()`
+
+### Parameters
+- None
+
+### Returns
+- `integer`
+
+### C Prototype
+`u8 network_player_connected_count(void);`
+
+[:arrow_up_small:](#)
+
+<br />
+
+## [network_player_from_global_index](#network_player_from_global_index)
+
+### Lua Example
+`local NetworkPlayerValue = network_player_from_global_index(globalIndex)`
+
+### Parameters
+| Field | Type |
+| ----- | ---- |
+| globalIndex | `integer` |
+
+### Returns
+[NetworkPlayer](structs.md#NetworkPlayer)
+
+### C Prototype
+`struct NetworkPlayer* network_player_from_global_index(u8 globalIndex);`
+
+[:arrow_up_small:](#)
+
+<br />
+
+## [network_player_palette_to_color](#network_player_palette_to_color)
+
+### Lua Example
+`network_player_palette_to_color(np, part, out)`
+
+### Parameters
+| Field | Type |
+| ----- | ---- |
+| np | [NetworkPlayer](structs.md#NetworkPlayer) |
+| part | [enum PlayerParts](constants.md#enum-PlayerParts) |
+| out | `Color` |
+
+### Returns
+- None
+
+### C Prototype
+`void network_player_palette_to_color(struct NetworkPlayer *np, enum PlayerParts part, Color out);`
+
+[:arrow_up_small:](#)
+
+<br />
+
+## [network_player_set_description](#network_player_set_description)
+
+### Lua Example
+`network_player_set_description(np, description, r, g, b, a)`
+
+### Parameters
+| Field | Type |
+| ----- | ---- |
+| np | [NetworkPlayer](structs.md#NetworkPlayer) |
+| description | `string` |
+| r | `integer` |
+| g | `integer` |
+| b | `integer` |
+| a | `integer` |
+
+### Returns
+- None
+
+### C Prototype
+`void network_player_set_description(struct NetworkPlayer* np, const char* description, u8 r, u8 g, u8 b, u8 a);`
 
 [:arrow_up_small:](#)
 

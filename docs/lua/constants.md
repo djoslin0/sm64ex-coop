@@ -36,7 +36,6 @@
     - [enum MarioEyesGSCId](#enum-MarioEyesGSCId)
     - [enum MarioGrabPosGSCId](#enum-MarioGrabPosGSCId)
     - [enum MarioHandGSCId](#enum-MarioHandGSCId)
-- [mod_storage.cpp.h](#mod_storagecpph)
 - [network.h](#networkh)
     - [enum NetworkSystemType](#enum-NetworkSystemType)
     - [enum PlayerInteractions](#enum-PlayerInteractions)
@@ -1871,8 +1870,6 @@
 | MARIO_ANIM_RETURN_FROM_STAR_DANCE | 206 |
 | MARIO_ANIM_FORWARD_SPINNING_FLIP | 207 |
 | MARIO_ANIM_TRIPLE_JUMP_FLY | 208 |
-| WALUIGI_ANIM_WALKING | 209 |
-| WALUIGI_ANIM_RUNNING | 210 |
 
 [:arrow_up_small:](#)
 
@@ -1918,14 +1915,6 @@
 | MARIO_HAND_HOLDING_CAP | 3 |
 | MARIO_HAND_HOLDING_WING_CAP | 4 |
 | MARIO_HAND_RIGHT_OPEN | 5 |
-
-[:arrow_up_small:](#)
-
-<br />
-
-## [mod_storage.cpp.h](#mod_storage.cpp.h)
-- MAX_KEYS
-- MAX_KEY_VALUE_LENGTH
 
 [:arrow_up_small:](#)
 
